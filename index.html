@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Shadow Strike</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#05070b;
+    color:white;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+/* BACKGROUND */
+
+.background{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 75% 25%,rgba(0,170,255,.20),transparent 25%),
+        radial-gradient(circle at 20% 80%,rgba(130,0,255,.18),transparent 30%),
+        linear-gradient(135deg,#05070b,#0b1019 50%,#030407);
+    z-index:-3;
+}
+
+.background::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(115deg,transparent 40%,rgba(255,255,255,.025) 41%,transparent 42%),
+        linear-gradient(65deg,transparent 55%,rgba(0,180,255,.035) 56%,transparent 57%);
+    background-size:180px 180px;
+    animation:bgMove 12s linear infinite;
+}
+
+@keyframes bgMove{
+    from{transform:translate(0,0)}
+    to{transform:translate(180px,180px)}
+}
+
+/* TOP BAR */
+
+.topbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 16px;
+    background:rgba(5,8,13,.82);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(14px);
+}
+
+.player{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:2px solid #36c8ff;
+    background:
+        radial-gradient(circle,#33465c,#10151e 65%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    box-shadow:0 0 15px rgba(0,190,255,.35);
+}
+
+.player-info b{
+    display:block;
+    font-size:14px;
+}
+
+.level{
+    font-size:11px;
+    color:#7e8b9d;
+    margin-top:3px;
+}
+
+.currencies{
+    display:flex;
+    gap:7px;
+}
+
+.currency{
+    min-width:75px;
+    padding:7px 9px;
+    border-radius:10px;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.08);
+    text-align:center;
+    font-size:12px;
+}
+
+.currency span{
+    font-weight:bold;
+    margin-left:3px;
+}
+
+.sc{
+    color:#65d8ff;
+}
+
+.credits{
+    color:#ffd45c;
+}
+
+/* MAIN */
+
+.main{
+    height:calc(100vh - 125px);
+    overflow-y:auto;
+    padding:18px 15px 25px;
+}
+
+/* HERO */
+
+.hero{
+    min-height:225px;
+    border-radius:22px;
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(90deg,rgba(0,0,0,.92),rgba(0,0,0,.3)),
+        linear-gradient(135deg,#152536,#070a0e);
+    border:1px solid rgba(255,255,255,.1);
+    box-shadow:0 15px 45px rgba(0,0,0,.5);
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    right:-50px;
+    top:-70px;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(0,180,255,.25),transparent 65%);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    padding:28px 22px;
+}
+
+.small-title{
+    color:#55cfff;
+    font-size:11px;
+    letter-spacing:3px;
+    font-weight:bold;
+}
+
+.hero h1{
+    font-size:38px;
+    letter-spacing:2px;
+    margin:8px 0;
+    text-shadow:0 4px 20px rgba(0,0,0,.8);
+}
+
+.hero p{
+    color:#aeb9c7;
+    font-size:13px;
+    max-width:270px;
+    line-height:1.6;
+}
+
+.play-btn{
+    margin-top:20px;
+    border:0;
+    padding:13px 28px;
+    border-radius:10px;
+    background:linear-gradient(135deg,#19bfff,#176dff);
+    color:white;
+    font-size:14px;
+    font-weight:bold;
+    box-shadow:0 8px 25px rgba(0,150,255,.3);
+    cursor:pointer;
+}
+
+.play-btn:active{
+    transform:scale(.96);
+}
+
+/* SECTION */
+
+.section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:20px 2px 10px;
+}
+
+.section-title h2{
+    font-size:16px;
+}
+
+.section-title span{
+    color:#657386;
+    font-size:11px;
+}
+
+/* MODES */
+
+.modes{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.mode{
+    min-height:92px;
+    padding:14px;
+    border-radius:15px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.045);
+    position:relative;
+    overflow:hidden;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.mode:active{
+    transform:scale(.97);
+}
+
+.mode::after{
+    content:"";
+    position:absolute;
+    width:90px;
+    height:90px;
+    right:-30px;
+    bottom:-35px;
+    border-radius:50%;
+    background:rgba(0,180,255,.08);
+}
+
+.mode b{
+    display:block;
+    font-size:15px;
+    margin-bottom:7px;
+}
+
+.mode small{
+    color:#778496;
+}
+
+.easy b{color:#65e68c}
+.medium b{color:#ffe06b}
+.hard b{color:#ff8a65}
+.nightmare b{color:#ff4d67}
+
+/* QUICK MENU */
+
+.quick{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+}
+
+.quick-btn{
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.045);
+    color:white;
+    border-radius:14px;
+    padding:14px 5px;
+    font-size:11px;
+    cursor:pointer;
+}
+
+.quick-btn div{
+    font-size:21px;
+    margin-bottom:7px;
+}
+
+/* BOTTOM NAV */
+
+.bottom{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:55px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    background:rgba(5,8,13,.94);
+    border-top:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+}
+
+.nav{
+    border:0;
+    background:none;
+    color:#647183;
+    font-size:10px;
+    cursor:pointer;
+}
+
+.nav div{
+    font-size:19px;
+    margin-bottom:2px;
+}
+
+.nav.active{
+    color:#45caff;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:75px;
+    transform:translateX(-50%) translateY(20px);
+    padding:11px 18px;
+    border-radius:10px;
+    background:#111923;
+    border:1px solid rgba(255,255,255,.1);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+@media(min-width:700px){
+    .main{
+        max-width:850px;
+        margin:auto;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<header class="topbar">
+
+    <div class="player">
+        <div class="avatar">👤</div>
+
+        <div class="player-info">
+            <b id="playerName">GHOST</b>
+            <div class="level">LEVEL <span id="level">1</span></div>
+        </div>
+    </div>
+
+    <div class="currencies">
+        <div class="currency">
+            💎 <span class="sc" id="sc">250</span>
+        </div>
+
+        <div class="currency">
+            🪙 <span class="credits" id="credits">1000</span>
+        </div>
+    </div>
+
+</header>
+
+
+<main class="main">
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="small-title">SHADOW STRIKE</div>
+
+            <h1>MISSION<br>PROTOCOL</h1>
+
+            <p>
+                Enter the battlefield. Complete missions,
+                unlock weapons and become the ultimate operator.
+            </p>
+
+            <button class="play-btn" onclick="startGame()">
+                ▶ START MISSION
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <div class="section-title">
+        <h2>DIFFICULTY</h2>
+        <span>SELECT MODE</span>
+    </div>
+
+
+    <section class="modes">
+
+        <div class="mode easy" onclick="selectMode('Easy')">
+            <b>🟢 EASY</b>
+            <small>Training Operation</small>
+        </div>
+
+        <div class="mode medium" onclick="selectMode('Medium')">
+            <b>🟡 MEDIUM</b>
+            <small>Combat Operation</small>
+        </div>
+
+        <div class="mode hard" onclick="selectMode('Hard')">
+            <b>🔴 HARD</b>
+            <small>Elite Operation</small>
+        </div>
+
+        <div class="mode nightmare" onclick="selectMode('Nightmare')">
+            <b>☠ NIGHTMARE</b>
+            <small>Extreme Operation</small>
+        </div>
+
+    </section>
+
+
+    <div class="section-title">
+        <h2>COMMAND CENTER</h2>
+    </div>
+
+
+    <section class="quick">
+
+        <button class="quick-btn" onclick="openPage('weapons')">
+            <div>🔫</div>
+            WEAPONS
+        </button>
+
+        <button class="quick-btn" onclick="openPage('store')">
+            <div>🛒</div>
+            STORE
+        </button>
+
+        <button class="quick-btn" onclick="openPage('profile')">
+            <div>👤</div>
+            PROFILE
+        </button>
+
+    </section>
+
+</main>
+
+
+<nav class="bottom">
+
+    <button class="nav active">
+        <div>⌂</div>
+        HOME
+    </button>
+
+    <button class="nav" onclick="openPage('missions')">
+        <div>🎯</div>
+        MISSIONS
+    </button>
+
+    <button class="nav" onclick="openPage('weapons')">
+        <div>🔫</div>
+        ARMORY
+    </button>
+
+    <button class="nav" onclick="openPage('store')">
+        <div>🛒</div>
+        STORE
+    </button>
+
+    <button class="nav" onclick="openPage('profile')">
+        <div>👤</div>
+        ACCOUNT
+    </button>
+
+</nav>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* SAVE SYSTEM */
+
+const defaultData = {
+    playerName:"GHOST",
+    level:1,
+    sc:250,
+    credits:1000,
+    selectedMode:"Easy",
+    unlockedLevel:1
+};
+
+let data = JSON.parse(
+    localStorage.getItem("shadowStrike")
+) || defaultData;
+
+
+/* LOAD */
+
+function loadData(){
+
+    document.getElementById("playerName").textContent =
+        data.playerName;
+
+    document.getElementById("level").textContent =
+        data.level;
+
+    document.getElementById("sc").textContent =
+        data.sc;
+
+    document.getElementById("credits").textContent =
+        data.credits;
+}
+
+loadData();
+
+
+/* SAVE */
+
+function saveData(){
+
+    localStorage.setItem(
+        "shadowStrike",
+        JSON.stringify(data)
+    );
+}
+
+
+/* MODE */
+
+function selectMode(mode){
+
+    data.selectedMode = mode;
+
+    saveData();
+
+    showToast(mode + " mode selected");
+}
+
+
+/* START */
+
+function startGame(){
+
+    showToast(
+        "Starting " + data.selectedMode + " mission..."
+    );
+
+    /*
+      در مرحله بعد این قسمت را به
+      game.html وصل می‌کنیم.
+    */
+
+}
+
+
+/* MENU */
+
+function openPage(page){
+
+    showToast(
+        page.toUpperCase() + " module coming soon"
+    );
+
+}
+
+
+/* TOAST */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+        toast.classList.remove("show");
+    },1800);
+
+}
+
+</script>
+
+</body>
+  </html>
