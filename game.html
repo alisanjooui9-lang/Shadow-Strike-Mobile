@@ -5,7 +5,7 @@
 <meta name="viewport"
       content="width=device-width,initial-scale=1.0,user-scalable=no">
 
-<title>Shadow Strike Mobile</title>
+<title>Shadow Strike | Mission</title>
 
 <style>
 *{
@@ -15,1515 +15,837 @@
     -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#05070a;
-    font-family:Arial,sans-serif;
-    touch-action:none;
-}
-
-#game{
-    position:fixed;
-    inset:0;
-}
-
-canvas{
-    display:block;
-    width:100%;
-    height:100%;
-}
-
-/* HUD */
-
-#hud{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#05070b;
     color:white;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+.background{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    background:
+        radial-gradient(circle at 80% 20%,rgba(0,180,255,.20),transparent 28%),
+        radial-gradient(circle at 15% 80%,rgba(130,0,255,.18),transparent 30%),
+        linear-gradient(135deg,#030509,#0a111b,#020306);
 }
 
 .top{
-    position:absolute;
-    top:14px;
-    left:14px;
-    right:14px;
+    height:65px;
     display:flex;
     justify-content:space-between;
-    align-items:flex-start;
+    align-items:center;
+    padding:10px 15px;
+    background:rgba(4,7,12,.9);
+    border-bottom:1px solid rgba(255,255,255,.08);
 }
 
-.status{
-    background:rgba(0,0,0,.48);
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:12px;
+.back{
+    border:0;
+    background:rgba(255,255,255,.06);
+    color:white;
     padding:9px 13px;
-    backdrop-filter:blur(8px);
+    border-radius:10px;
+    cursor:pointer;
 }
 
-.hp{
-    width:170px;
-    height:8px;
-    margin-top:6px;
-    background:#222;
-    border-radius:10px;
+.title{
+    text-align:center;
+}
+
+.title b{
+    display:block;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+.title small{
+    color:#687789;
+    font-size:9px;
+}
+
+.stats{
+    display:flex;
+    gap:7px;
+}
+
+.stat{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    padding:7px 9px;
+    border-radius:9px;
+    font-size:11px;
+}
+
+.main{
+    height:calc(100vh - 65px);
+    overflow-y:auto;
+    padding:18px 15px 30px;
+    max-width:700px;
+    margin:auto;
+}
+
+.mission{
+    padding:22px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.1);
+    background:rgba(255,255,255,.045);
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
+}
+
+.mission-label{
+    color:#55cfff;
+    font-size:10px;
+    letter-spacing:3px;
+    font-weight:bold;
+}
+
+.mission h1{
+    margin:8px 0 6px;
+    font-size:30px;
+}
+
+.description{
+    color:#91a0b2;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.progress-box{
+    margin-top:20px;
+}
+
+.progress-info{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    margin-bottom:7px;
+}
+
+.progress{
+    width:100%;
+    height:9px;
+    background:#111923;
+    border-radius:20px;
     overflow:hidden;
 }
 
-.hpbar{
-    width:100%;
+.progress-bar{
     height:100%;
-    background:#45ff7b;
+    width:0%;
+    background:linear-gradient(90deg,#19bfff,#176dff);
+    transition:.3s;
 }
 
-.ammo{
-    text-align:right;
-    font-size:24px;
-    font-weight:bold;
+.objective{
+    margin-top:18px;
+    padding:16px;
+    border-radius:15px;
+    background:rgba(0,0,0,.25);
+    border:1px solid rgba(255,255,255,.07);
 }
 
-#crosshair{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:34px;
-    height:34px;
-    transform:translate(-50%,-50%);
+.objective h2{
+    font-size:14px;
+    margin-bottom:12px;
 }
 
-#crosshair span,
-#crosshair:before,
-#crosshair:after{
-    position:absolute;
-    content:"";
-    background:white;
-    box-shadow:0 0 5px #000;
-}
-
-#crosshair span{
-    width:4px;
-    height:4px;
-    border-radius:50%;
-    left:15px;
-    top:15px;
-}
-
-#crosshair:before{
-    width:2px;
-    height:11px;
-    left:16px;
-    top:0;
-    box-shadow:
-      0 23px 0 white,
-      0 0 5px #000;
-}
-
-#crosshair:after{
-    width:11px;
-    height:2px;
-    left:0;
-    top:16px;
-    box-shadow:
-      23px 0 0 white,
-      0 0 5px #000;
-}
-
-/* joystick */
-
-#joystick{
-    position:absolute;
-    left:25px;
-    bottom:30px;
-    width:145px;
-    height:145px;
-    border-radius:50%;
-    background:rgba(255,255,255,.08);
-    border:2px solid rgba(255,255,255,.16);
-    pointer-events:auto;
-}
-
-#stick{
-    position:absolute;
-    width:62px;
-    height:62px;
-    left:40px;
-    top:40px;
-    border-radius:50%;
-    background:rgba(255,255,255,.22);
-    border:2px solid rgba(255,255,255,.3);
-}
-
-/* buttons */
-
-.controls{
-    position:absolute;
-    right:20px;
-    bottom:25px;
-    width:230px;
-    height:220px;
-    pointer-events:auto;
-}
-
-.btn{
-    position:absolute;
-    width:62px;
-    height:62px;
-    border-radius:50%;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(15,18,22,.72);
-    color:white;
+.target{
     display:flex;
-    justify-content:center;
+    justify-content:space-between;
     align-items:center;
+    padding:13px;
+    border-radius:11px;
+    background:rgba(255,255,255,.045);
+}
+
+.target-name{
     font-size:12px;
+    color:#b6c1ce;
+}
+
+.target-count{
+    font-size:15px;
     font-weight:bold;
-    user-select:none;
+    color:#65d8ff;
 }
 
-.btn:active{
-    transform:scale(.91);
-    background:rgba(255,255,255,.25);
+.action{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-#fire{
-    right:10px;
-    bottom:70px;
-    width:82px;
-    height:82px;
-    border:2px solid rgba(255,80,80,.65);
+.action button{
+    border:0;
+    border-radius:12px;
+    padding:14px;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.complete-btn{
+    background:linear-gradient(135deg,#19bfff,#176dff);
+}
+
+.reset-btn{
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1)!important;
+}
+
+.levels-title{
+    margin:22px 2px 10px;
     font-size:15px;
 }
 
-#aim{
-    right:100px;
-    bottom:135px;
+.levels{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
 }
 
-#reload{
-    right:105px;
-    bottom:15px;
-}
-
-#jump{
-    right:10px;
-    bottom:0;
-}
-
-#crouch{
-    right:175px;
-    bottom:75px;
-}
-
-#sprint{
-    right:175px;
-    bottom:0;
-}
-
-#pause{
-    position:absolute;
-    top:75px;
-    right:15px;
-    width:48px;
-    height:48px;
+.level-card{
+    min-height:70px;
+    padding:10px 5px;
     border-radius:12px;
-    border:1px solid rgba(255,255,255,.2);
-    background:rgba(0,0,0,.5);
-    color:white;
-    font-size:18px;
-    pointer-events:auto;
-}
-
-/* weapon */
-
-#weapon{
-    position:absolute;
-    left:50%;
-    bottom:-8px;
-    width:330px;
-    height:180px;
-    transform:translateX(-50%);
-    pointer-events:none;
-}
-
-.weaponBody{
-    position:absolute;
-    width:240px;
-    height:55px;
-    right:15px;
-    bottom:70px;
-    background:linear-gradient(
-        90deg,
-        #17191c,
-        #3b3e43,
-        #111316
-    );
-    transform:rotate(-5deg);
-    border-radius:8px;
-    box-shadow:0 10px 25px #000;
-}
-
-.weaponBarrel{
-    position:absolute;
-    width:120px;
-    height:18px;
-    right:-65px;
-    bottom:88px;
-    background:#111;
-    transform:rotate(-5deg);
-}
-
-.weaponGrip{
-    position:absolute;
-    width:45px;
-    height:95px;
-    right:100px;
-    bottom:0;
-    background:#17191c;
-    transform:rotate(12deg);
-    border-radius:7px;
-}
-
-.muzzle{
-    position:absolute;
-    right:-87px;
-    bottom:84px;
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    background:#fff;
-    box-shadow:
-      0 0 18px #fff,
-      0 0 35px #ffb000;
-    opacity:0;
-}
-
-.muzzle.show{
-    opacity:1;
-}
-
-/* damage */
-
-#damage{
-    position:absolute;
-    inset:0;
-    background:rgba(255,0,0,.25);
-    opacity:0;
-    transition:.15s;
-}
-
-/* mission */
-
-#mission{
-    position:absolute;
-    left:50%;
-    top:15%;
-    transform:translateX(-50%);
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.08);
     text-align:center;
-    color:white;
-    text-shadow:0 3px 10px #000;
+    font-size:11px;
 }
 
-#mission h1{
-    font-size:26px;
-    letter-spacing:4px;
+.level-card b{
+    display:block;
+    font-size:16px;
+    margin-bottom:6px;
 }
 
-#mission p{
-    margin-top:5px;
-    opacity:.7;
+.level-card small{
+    color:#647386;
 }
 
-#pauseMenu{
+.level-card.current{
+    border-color:#29c5ff;
+    box-shadow:0 0 15px rgba(0,190,255,.15);
+}
+
+.level-card.unlocked{
+    color:#65e68c;
+}
+
+.level-card.locked{
+    opacity:.45;
+}
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translateX(-50%) translateY(20px);
+    padding:11px 18px;
+    border-radius:10px;
+    background:#111923;
+    border:1px solid rgba(255,255,255,.1);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+}
+
+.modal{
     position:fixed;
     inset:0;
+    background:rgba(0,0,0,.75);
     display:none;
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.72);
-    z-index:20;
+    padding:20px;
 }
 
-.menuBox{
-    width:85%;
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
     max-width:380px;
-    padding:28px;
+    padding:25px;
     border-radius:20px;
-    background:#101419;
-    border:1px solid rgba(255,255,255,.15);
-    color:white;
+    background:#0b121b;
+    border:1px solid rgba(255,255,255,.1);
     text-align:center;
 }
 
-.menuBox h2{
-    font-size:28px;
-    margin-bottom:20px;
+.modal-box h2{
+    color:#65e68c;
+    margin-bottom:10px;
 }
 
-.menuBtn{
-    width:100%;
-    padding:14px;
-    margin-top:10px;
-    border:0;
+.reward{
+    margin:15px 0;
+    padding:13px;
     border-radius:12px;
+    background:rgba(255,255,255,.05);
+    color:#ffd45c;
+}
+
+.modal-box button{
+    width:100%;
+    border:0;
+    padding:13px;
+    border-radius:11px;
+    background:linear-gradient(135deg,#19bfff,#176dff);
     color:white;
-    background:#242a31;
-    font-size:15px;
+    font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<div id="game"></div>
+<div class="background"></div>
 
-<div id="hud">
+<header class="top">
 
-    <div class="top">
+    <button class="back" onclick="goHome()">
+        ← HOME
+    </button>
 
-        <div class="status">
-            <b>SHADOW STRIKE</b>
-            <div class="hp">
-                <div class="hpbar" id="hpbar"></div>
+    <div class="title">
+        <b>SHADOW STRIKE</b>
+        <small>MISSION CONTROL</small>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            🪙 <span id="credits">1000</span>
+        </div>
+        <div class="stat">
+            ⭐ <span id="xp">0</span>
+        </div>
+    </div>
+
+</header>
+
+
+<main class="main">
+
+    <section class="mission">
+
+        <div class="mission-label">
+            ACTIVE OPERATION
+        </div>
+
+        <h1 id="missionName">
+            TRAINING PROTOCOL
+        </h1>
+
+        <p class="description" id="description">
+            Complete the objective to advance to the next mission.
+        </p>
+
+
+        <div class="progress-box">
+
+            <div class="progress-info">
+                <span>MISSION PROGRESS</span>
+                <span id="progressText">0 / 5</span>
             </div>
-            <small id="hpText">100 HP</small>
+
+            <div class="progress">
+                <div
+                    class="progress-bar"
+                    id="progressBar">
+                </div>
+            </div>
+
         </div>
 
-        <div class="status ammo">
-            <span id="ammo">30</span>
-            <small>/ 120</small>
+
+        <div class="objective">
+
+            <h2>🎯 CURRENT OBJECTIVE</h2>
+
+            <div class="target">
+
+                <span
+                    class="target-name"
+                    id="targetName">
+                    Complete Training Tasks
+                </span>
+
+                <span
+                    class="target-count"
+                    id="targetCount">
+                    0 / 5
+                </span>
+
+            </div>
+
         </div>
 
-    </div>
 
-    <div id="mission">
-        <h1>MISSION 01</h1>
-        <p>ELIMINATE THE TARGETS</p>
-    </div>
+        <div class="action">
 
-    <div id="crosshair">
-        <span></span>
-    </div>
+            <button
+                class="complete-btn"
+                onclick="completeTask()">
+                ✓ COMPLETE TASK
+            </button>
 
-    <div id="damage"></div>
+            <button
+                class="reset-btn"
+                onclick="resetMission()">
+                ↻ RESET
+            </button>
 
-    <div id="joystick">
-        <div id="stick"></div>
-    </div>
-
-    <div class="controls">
-
-        <div class="btn" id="aim">AIM</div>
-        <div class="btn" id="reload">RELOAD</div>
-        <div class="btn" id="jump">JUMP</div>
-        <div class="btn" id="crouch">CROUCH</div>
-        <div class="btn" id="sprint">SPRINT</div>
-
-        <div class="btn" id="fire">
-            FIRE
-            <div class="muzzle" id="muzzle"></div>
         </div>
 
-    </div>
+    </section>
 
-    <button id="pause">Ⅱ</button>
 
-    <div id="weapon">
-        <div class="weaponBody"></div>
-        <div class="weaponBarrel"></div>
-        <div class="weaponGrip"></div>
+    <h2 class="levels-title">
+        MISSION LEVELS
+    </h2>
+
+    <section class="levels" id="levels"></section>
+
+</main>
+
+
+<div class="toast" id="toast"></div>
+
+
+<div class="modal" id="rewardModal">
+
+    <div class="modal-box">
+
+        <h2>MISSION COMPLETE</h2>
+
+        <p>
+            Operation completed successfully.
+        </p>
+
+        <div class="reward">
+            🪙 +<span id="rewardCredits">100</span>
+            &nbsp;&nbsp;
+            ⭐ +<span id="rewardXP">50</span>
+        </div>
+
+        <button onclick="nextLevel()">
+            CONTINUE →
+        </button>
+
     </div>
 
 </div>
 
-<div id="pauseMenu">
 
-    <div class="menuBox">
-
-        <h2>PAUSED</h2>
-
-        <button class="menuBtn" id="resume">
-            RESUME
-        </button>
-
-        <button class="menuBtn" id="restart">
-            RESTART
-        </button>
-
-        <button class="menuBtn" id="exit">
-            EXIT
-        </button>
-
-    </div>
-
-</div>
-
-
-<script type="module">
-
-import * as THREE from "./three.module.js";
-
-/* =========================
-   GAME STATE
-========================= */
-
-const game = document.getElementById("game");
-
-let hp = 100;
-let ammo = 30;
-let reserve = 120;
-
-let paused = false;
-let aiming = false;
-
-let moveX = 0;
-let moveZ = 0;
-
-let velocityY = 0;
-let grounded = true;
-
-let enemies = [];
-let bullets = [];
-
-
-/* =========================
-   SCENE
-========================= */
-
-const scene = new THREE.Scene();
-
-scene.background = new THREE.Color(0x071018);
-
-scene.fog = new THREE.Fog(
-    0x071018,
-    25,
-    160
-);
-
-
-/* =========================
-   CAMERA
-========================= */
-
-const camera = new THREE.PerspectiveCamera(
-    70,
-    innerWidth / innerHeight,
-    0.1,
-    500
-);
-
-camera.position.set(
-    0,
-    2,
-    10
-);
-
-
-/* =========================
-   RENDERER
-========================= */
-
-const renderer = new THREE.WebGLRenderer({
-    antialias:true,
-    powerPreference:"high-performance"
-});
-
-renderer.setPixelRatio(
-    Math.min(devicePixelRatio,1.8)
-);
-
-renderer.setSize(
-    innerWidth,
-    innerHeight
-);
-
-renderer.shadowMap.enabled = true;
-
-renderer.shadowMap.type =
-    THREE.PCFSoftShadowMap;
-
-game.appendChild(renderer.domElement);
-
-
-/* =========================
-   LIGHTING
-========================= */
-
-const ambient = new THREE.HemisphereLight(
-    0x9fc4ff,
-    0x151515,
-    1.6
-);
-
-scene.add(ambient);
-
-
-const sun = new THREE.DirectionalLight(
-    0xffffff,
-    2.5
-);
-
-sun.position.set(
-    30,
-    45,
-    20
-);
-
-sun.castShadow = true;
-
-sun.shadow.mapSize.width = 2048;
-sun.shadow.mapSize.height = 2048;
-
-sun.shadow.camera.left = -80;
-sun.shadow.camera.right = 80;
-sun.shadow.camera.top = 80;
-sun.shadow.camera.bottom = -80;
-
-scene.add(sun);
-
-
-/* =========================
-   GROUND
-========================= */
-
-const groundGeo =
-    new THREE.PlaneGeometry(
-        400,
-        400
-    );
-
-const groundMat =
-    new THREE.MeshStandardMaterial({
-        color:0x20262a,
-        roughness:.92,
-        metalness:.05
-    });
-
-const ground =
-    new THREE.Mesh(
-        groundGeo,
-        groundMat
-    );
-
-ground.rotation.x =
-    -Math.PI / 2;
-
-ground.receiveShadow = true;
-
-scene.add(ground);
-
-
-/* =========================
-   ROAD
-========================= */
-
-const roadGeo =
-    new THREE.PlaneGeometry(
-        18,
-        400
-    );
-
-const roadMat =
-    new THREE.MeshStandardMaterial({
-        color:0x111417,
-        roughness:.9
-    });
-
-const road =
-    new THREE.Mesh(
-        roadGeo,
-        roadMat
-    );
-
-road.rotation.x =
-    -Math.PI / 2;
-
-road.position.y =
-    .012;
-
-scene.add(road);
-
-
-/* =========================
-   BUILDINGS
-========================= */
-
-function createBuilding(
-    x,
-    z,
-    width,
-    height,
-    depth
-){
-
-    const geo =
-        new THREE.BoxGeometry(
-            width,
-            height,
-            depth
-        );
-
-    const mat =
-        new THREE.MeshStandardMaterial({
-            color:
-                new THREE.Color(
-                    0.08 +
-                    Math.random()*.08,
-                    0.09 +
-                    Math.random()*.08,
-                    0.11 +
-                    Math.random()*.08
-                ),
-            roughness:.8,
-            metalness:.15
-        });
-
-    const building =
-        new THREE.Mesh(
-            geo,
-            mat
-        );
-
-    building.position.set(
-        x,
-        height/2,
-        z
-    );
-
-    building.castShadow = true;
-    building.receiveShadow = true;
-
-    scene.add(building);
-
-    /* windows */
-
-    for(
-        let y = 3;
-        y < height-1;
-        y += 3
-    ){
-
-        for(
-            let xx = -width/2+1.5;
-            xx < width/2;
-            xx += 3
-        ){
-
-            const windowGeo =
-                new THREE.BoxGeometry(
-                    1.1,
-                    1.2,
-                    .08
-                );
-
-            const windowMat =
-                new THREE.MeshStandardMaterial({
-                    color:
-                        Math.random()>.35
-                        ? 0x8fb4c7
-                        : 0x1b2429,
-
-                    emissive:
-                        Math.random()>.65
-                        ? 0x496f7d
-                        : 0x000000,
-
-                    emissiveIntensity:.8
-                });
-
-            const win =
-                new THREE.Mesh(
-                    windowGeo,
-                    windowMat
-                );
-
-            win.position.set(
-                x + xx,
-                y,
-                z - depth/2-.05
-            );
-
-            scene.add(win);
-        }
-    }
-}
-
-
-/* city layout */
-
-createBuilding(-25,-30,20,32,18);
-createBuilding(27,-20,22,42,20);
-
-createBuilding(-29,15,24,26,22);
-createBuilding(30,25,18,35,20);
-
-createBuilding(-24,65,22,48,20);
-createBuilding(25,72,25,30,20);
-
-
-/* =========================
-   STREET LIGHTS
-========================= */
-
-function createStreetLight(x,z){
-
-    const poleGeo =
-        new THREE.CylinderGeometry(
-            .08,
-            .08,
-            6,
-            10
-        );
-
-    const poleMat =
-        new THREE.MeshStandardMaterial({
-            color:0x292d31,
-            metalness:.7,
-            roughness:.4
-        });
-
-    const pole =
-        new THREE.Mesh(
-            poleGeo,
-            poleMat
-        );
-
-    pole.position.set(
-        x,
-        3,
-        z
-    );
-
-    pole.castShadow = true;
-
-    scene.add(pole);
-
-
-    const light =
-        new THREE.PointLight(
-            0xffd6a0,
-            8,
-            15
-        );
-
-    light.position.set(
-        x,
-        6,
-        z
-    );
-
-    scene.add(light);
-}
-
-for(let z=-80;z<120;z+=18){
-
-    createStreetLight(-9,z);
-    createStreetLight(9,z);
-}
-
-
-/* =========================
-   PLAYER WEAPON
-========================= */
-
-const weapon =
-    new THREE.Group();
-
-const receiver =
-    new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .22,
-            .18,
-            .8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x181a1d,
-            metalness:.8,
-            roughness:.3
-        })
-    );
-
-receiver.position.set(
-    .28,
-    -.25,
-    -.75
-);
-
-weapon.add(receiver);
-
-
-const barrel =
-    new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .045,
-            .045,
-            .8,
-            12
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x111214,
-            metalness:.9,
-            roughness:.25
-        })
-    );
-
-barrel.rotation.x =
-    Math.PI/2;
-
-barrel.position.set(
-    .28,
-    -.23,
-    -1.15
-);
-
-weapon.add(barrel);
-
-
-camera.add(weapon);
-
-scene.add(camera);
-
-
-/* =========================
-   ENEMY
-========================= */
-
-function createEnemy(
-    x,
-    y,
-    z
-){
-
-    const enemy =
-        new THREE.Group();
-
-
-    const body =
-        new THREE.Mesh(
-            new THREE.CapsuleGeometry(
-                .42,
-                1.15,
-                5,
-                10
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x30343a,
-                roughness:.7
-            })
-        );
-
-    body.position.y =
-        1.05;
-
-    body.castShadow = true;
-
-    enemy.add(body);
-
-
-    const head =
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .31,
-                16,
-                16
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x70757b,
-                roughness:.8
-            })
-        );
-
-    head.position.y =
-        1.95;
-
-    head.castShadow = true;
-
-    enemy.add(head);
-
-
-    const weapon =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .18,
-                .18,
-                .9
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x15171a,
-                metalness:.7
-            })
-        );
-
-    weapon.position.set(
-        .38,
-        1.1,
-        -.35
-    );
-
-    enemy.add(weapon);
-
-
-    enemy.position.set(
-        x,
-        y,
-        z
-    );
-
-    scene.add(enemy);
-
-    enemies.push({
-        object:enemy,
-        hp:100,
-        alive:true
-    });
-}
-
-
-/* enemies */
-
-createEnemy(-4,0,-35);
-createEnemy(5,0,-48);
-createEnemy(-6,0,-65);
-createEnemy(7,0,-82);
-
-
-/* =========================
-   SHOOTING
-========================= */
-
-function fire(){
-
-    if(paused) return;
-
-    if(ammo <= 0){
-
-        reload();
-
-        return;
+<script>
+
+const missions = [
+
+    {
+        name:"TRAINING PROTOCOL",
+        description:"Complete your first training operation.",
+        target:"Complete Training Tasks",
+        goal:5,
+        rewardCredits:100,
+        rewardXP:50
+    },
+
+    {
+        name:"SHADOW RECON",
+        description:"Complete reconnaissance objectives.",
+        target:"Recon Tasks",
+        goal:7,
+        rewardCredits:150,
+        rewardXP:75
+    },
+
+    {
+        name:"NIGHT OPERATION",
+        description:"Complete the night-operation objectives.",
+        target:"Night Tasks",
+        goal:10,
+        rewardCredits:200,
+        rewardXP:100
+    },
+
+    {
+        name:"ELITE PROTOCOL",
+        description:"Complete advanced operator training.",
+        target:"Elite Tasks",
+        goal:12,
+        rewardCredits:300,
+        rewardXP:150
+    },
+
+    {
+        name:"FINAL PROTOCOL",
+        description:"Complete the final training protocol.",
+        target:"Final Tasks",
+        goal:15,
+        rewardCredits:500,
+        rewardXP:250
     }
 
-    ammo--;
+];
 
-    updateHUD();
 
+const defaultGameData = {
 
-    const muzzle =
-        document.getElementById("muzzle");
+    playerName:"GHOST",
+    level:1,
+    sc:250,
+    credits:1000,
+    selectedMode:"Easy",
+    unlockedLevel:1,
 
-    muzzle.classList.add("show");
+    missionProgress:0,
+    xp:0
 
-    setTimeout(()=>{
-        muzzle.classList.remove("show");
-    },60);
+};
 
 
-    /* raycast */
+let data;
 
-    const raycaster =
-        new THREE.Raycaster();
+try{
 
-    raycaster.setFromCamera(
-        new THREE.Vector2(0,0),
-        camera
-    );
-
-    const objects = [];
-
-    enemies.forEach(e=>{
-        if(e.alive){
-            e.object.traverse(obj=>{
-                if(obj.isMesh)
-                    objects.push(obj);
-            });
-        }
-    });
-
-
-    const hits =
-        raycaster.intersectObjects(
-            objects,
-            false
-        );
-
-
-    if(hits.length){
-
-        const hit =
-            hits[0].object;
-
-        const target =
-            enemies.find(e=>{
-                let found=false;
-
-                e.object.traverse(obj=>{
-                    if(obj===hit)
-                        found=true;
-                });
-
-                return found;
-            });
-
-
-        if(target){
-
-            target.hp -= 50;
-
-            if(target.hp <= 0){
-
-                target.alive=false;
-
-                scene.remove(
-                    target.object
-                );
-
-                saveProgress();
-
-            }
-        }
-    }
-}
-
-
-/* =========================
-   RELOAD
-========================= */
-
-function reload(){
-
-    if(ammo===30 || reserve<=0)
-        return;
-
-    const needed =
-        30-ammo;
-
-    const amount =
-        Math.min(
-            needed,
-            reserve
-        );
-
-    ammo += amount;
-    reserve -= amount;
-
-    updateHUD();
-}
-
-
-/* =========================
-   HUD
-========================= */
-
-function updateHUD(){
-
-    document.getElementById(
-        "ammo"
-    ).textContent = ammo;
-
-    document.getElementById(
-        "hpText"
-    ).textContent =
-        hp+" HP";
-
-    document.getElementById(
-        "hpbar"
-    ).style.width =
-        hp+"%";
-}
-
-
-/* =========================
-   JOYSTICK
-========================= */
-
-const joystick =
-    document.getElementById(
-        "joystick"
-    );
-
-const stick =
-    document.getElementById(
-        "stick"
-    );
-
-let joystickActive=false;
-
-joystick.addEventListener(
-    "pointerdown",
-    e=>{
-
-        joystickActive=true;
-
-        joystick.setPointerCapture(
-            e.pointerId
-        );
-
-        moveJoystick(e);
-    }
-);
-
-joystick.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(!joystickActive)
-            return;
-
-        moveJoystick(e);
-    }
-);
-
-joystick.addEventListener(
-    "pointerup",
-    ()=>{
-        joystickActive=false;
-
-        moveX=0;
-        moveZ=0;
-
-        stick.style.left="40px";
-        stick.style.top="40px";
-    }
-);
-
-
-function moveJoystick(e){
-
-    const r =
-        joystick.getBoundingClientRect();
-
-    let x =
-        e.clientX -
-        (r.left+r.width/2);
-
-    let y =
-        e.clientY -
-        (r.top+r.height/2);
-
-    const max=42;
-
-    const len =
-        Math.sqrt(x*x+y*y);
-
-    if(len>max){
-
-        x=x/len*max;
-        y=y/len*max;
-
-    }
-
-    stick.style.left =
-        (40+x)+"px";
-
-    stick.style.top =
-        (40+y)+"px";
-
-    moveX=x/max;
-    moveZ=y/max;
-}
-
-
-/* =========================
-   BUTTONS
-========================= */
-
-document.getElementById(
-    "fire"
-).addEventListener(
-    "pointerdown",
-    fire
-);
-
-document.getElementById(
-    "reload"
-).addEventListener(
-    "pointerdown",
-    reload
-);
-
-
-document.getElementById(
-    "aim"
-).addEventListener(
-    "pointerdown",
-    ()=>{
-        aiming=true;
-        camera.fov=45;
-        camera.updateProjectionMatrix();
-    }
-);
-
-document.getElementById(
-    "aim"
-).addEventListener(
-    "pointerup",
-    ()=>{
-        aiming=false;
-        camera.fov=70;
-        camera.updateProjectionMatrix();
-    }
-);
-
-
-/* jump */
-
-document.getElementById(
-    "jump"
-).addEventListener(
-    "pointerdown",
-    ()=>{
-
-        if(grounded){
-
-            velocityY=7;
-            grounded=false;
-        }
-
-    }
-);
-
-
-/* crouch */
-
-document.getElementById(
-    "crouch"
-).addEventListener(
-    "pointerdown",
-    ()=>{
-        camera.position.y=1.35;
-    }
-);
-
-document.getElementById(
-    "crouch"
-).addEventListener(
-    "pointerup",
-    ()=>{
-        camera.position.y=1.7;
-    }
-);
-
-
-/* =========================
-   PAUSE
-========================= */
-
-const pauseMenu =
-    document.getElementById(
-        "pauseMenu"
-    );
-
-document.getElementById(
-    "pause"
-).addEventListener(
-    "click",
-    ()=>{
-        paused=true;
-        pauseMenu.style.display="flex";
-    }
-);
-
-document.getElementById(
-    "resume"
-).addEventListener(
-    "click",
-    ()=>{
-        paused=false;
-        pauseMenu.style.display="none";
-    }
-);
-
-document.getElementById(
-    "restart"
-).addEventListener(
-    "click",
-    ()=>{
-        location.reload();
-    }
-);
-
-document.getElementById(
-    "exit"
-).addEventListener(
-    "click",
-    ()=>{
-        location.href="index.html";
-    }
-);
-
-
-/* =========================
-   SAVE
-========================= */
-
-function saveProgress(){
-
-    let save =
+    data =
         JSON.parse(
-            localStorage.getItem(
-                "shadowStrike"
-            ) || "{}"
-        );
+            localStorage.getItem("shadowStrike")
+        ) || defaultGameData;
 
-    save.kills =
-        Number(save.kills || 0)+1;
+}catch(error){
 
-    save.xp =
-        Number(save.xp || 0)+100;
+    data = defaultGameData;
 
-    save.credits =
-        Number(save.credits || 1000)+250;
+}
+
+
+/* اگر اطلاعات قدیمی بود */
+
+if(typeof data.unlockedLevel !== "number"){
+    data.unlockedLevel = 1;
+}
+
+if(typeof data.missionProgress !== "number"){
+    data.missionProgress = 0;
+}
+
+if(typeof data.xp !== "number"){
+    data.xp = 0;
+}
+
+
+/* ذخیره */
+
+function saveData(){
 
     localStorage.setItem(
         "shadowStrike",
-        JSON.stringify(save)
+        JSON.stringify(data)
     );
+
 }
 
 
-/* =========================
-   MOVEMENT
-========================= */
+/* مأموریت فعلی */
 
-const clock =
-    new THREE.Clock();
+function getMission(){
 
-function updatePlayer(delta){
+    const index =
+        Math.min(
+            data.level - 1,
+            missions.length - 1
+        );
 
-    if(paused)
-        return;
+    return missions[index];
 
-
-    const speed =
-        aiming ? 2.2 : 5.5;
-
-
-    camera.translateX(
-        moveX *
-        speed *
-        delta
-    );
-
-    camera.translateZ(
-        moveZ *
-        speed *
-        delta
-    );
-
-
-    velocityY -=
-        18*delta;
-
-    camera.position.y +=
-        velocityY*delta;
-
-
-    if(camera.position.y<=1.7){
-
-        camera.position.y=1.7;
-
-        velocityY=0;
-
-        grounded=true;
-    }
 }
 
 
-/* =========================
-   ENEMY AI
-========================= */
+/* نمایش */
 
-function updateEnemies(delta){
+function render(){
 
-    enemies.forEach(enemy=>{
+    const mission = getMission();
 
-        if(!enemy.alive)
-            return;
+    document.getElementById("missionName")
+        .textContent = mission.name;
+
+    document.getElementById("description")
+        .textContent = mission.description;
+
+    document.getElementById("targetName")
+        .textContent = mission.target;
+
+    document.getElementById("credits")
+        .textContent = data.credits;
+
+    document.getElementById("xp")
+        .textContent = data.xp;
+
+    const progress =
+        Math.min(
+            data.missionProgress,
+            mission.goal
+        );
+
+    document.getElementById("targetCount")
+        .textContent =
+        progress + " / " + mission.goal;
+
+    document.getElementById("progressText")
+        .textContent =
+        progress + " / " + mission.goal;
+
+    const percentage =
+        (progress / mission.goal) * 100;
+
+    document.getElementById("progressBar")
+        .style.width =
+        percentage + "%";
 
 
-        const e =
-            enemy.object;
+    renderLevels();
 
-        const dx =
-            camera.position.x -
-            e.position.x;
-
-        const dz =
-            camera.position.z -
-            e.position.z;
-
-        const distance =
-            Math.sqrt(
-                dx*dx+dz*dz
-            );
+}
 
 
-        if(distance<45){
+function renderLevels(){
 
-            e.lookAt(
-                camera.position.x,
-                e.position.y,
-                camera.position.z
-            );
+    const container =
+        document.getElementById("levels");
 
+    container.innerHTML = "";
+
+    missions.forEach((mission,index)=>{
+
+        const levelNumber = index + 1;
+
+        const card =
+            document.createElement("div");
+
+        card.className = "level-card";
+
+
+        if(levelNumber === data.level){
+            card.classList.add("current");
         }
+
+        if(levelNumber <= data.unlockedLevel){
+            card.classList.add("unlocked");
+        }
+
+        if(levelNumber > data.unlockedLevel){
+            card.classList.add("locked");
+        }
+
+
+        card.innerHTML = `
+            <b>
+                ${
+                    levelNumber <= data.unlockedLevel
+                    ? "✓"
+                    : "🔒"
+                }
+            </b>
+
+            LEVEL ${levelNumber}
+
+            <small>
+                ${levelNumber === data.level
+                    ? "CURRENT"
+                    : levelNumber <= data.unlockedLevel
+                    ? "UNLOCKED"
+                    : "LOCKED"}
+            </small>
+        `;
+
+
+        container.appendChild(card);
 
     });
 
 }
 
 
-/* =========================
-   RESIZE
-========================= */
+/* انجام یک کار */
 
-addEventListener(
-    "resize",
-    ()=>{
-        camera.aspect =
-            innerWidth/
-            innerHeight;
+function completeTask(){
 
-        camera.updateProjectionMatrix();
+    const mission = getMission();
 
-        renderer.setSize(
-            innerWidth,
-            innerHeight
-        );
+    if(data.missionProgress >= mission.goal){
+
+        showToast("Mission already completed");
+
+        return;
     }
-);
 
 
-/* =========================
-   MAIN LOOP
-========================= */
+    data.missionProgress++;
 
-function animate(){
+    saveData();
 
-    requestAnimationFrame(
-        animate
-    );
+    render();
 
-    const delta =
-        Math.min(
-            clock.getDelta(),
-            .05
+
+    if(data.missionProgress >= mission.goal){
+
+        completeMission();
+
+    }else{
+
+        showToast(
+            "Objective progress: " +
+            data.missionProgress +
+            "/" +
+            mission.goal
         );
 
-    updatePlayer(delta);
+    }
 
-    updateEnemies(delta);
-
-    renderer.render(
-        scene,
-        camera
-    );
 }
 
-updateHUD();
 
-animate();
+/* تکمیل مرحله */
+
+function completeMission(){
+
+    const mission = getMission();
+
+    data.credits += mission.rewardCredits;
+
+    data.xp += mission.rewardXP;
+
+
+    if(
+        data.level < missions.length
+    ){
+
+        data.unlockedLevel =
+            Math.max(
+                data.unlockedLevel,
+                data.level + 1
+            );
+
+    }
+
+
+    saveData();
+
+
+    document.getElementById("rewardCredits")
+        .textContent =
+        mission.rewardCredits;
+
+    document.getElementById("rewardXP")
+        .textContent =
+        mission.rewardXP;
+
+    document.getElementById("rewardModal")
+        .classList.add("show");
+
+}
+
+
+/* مرحله بعد */
+
+function nextLevel(){
+
+    document.getElementById("rewardModal")
+        .classList.remove("show");
+
+
+    if(data.level < missions.length){
+
+        data.level++;
+
+        data.missionProgress = 0;
+
+        saveData();
+
+        render();
+
+        showToast(
+            "LEVEL " +
+            data.level +
+            " UNLOCKED!"
+        );
+
+    }else{
+
+        showToast(
+            "ALL MISSIONS COMPLETED!"
+        );
+
+    }
+
+}
+
+
+/* ریست مرحله */
+
+function resetMission(){
+
+    data.missionProgress = 0;
+
+    saveData();
+
+    render();
+
+    showToast("Mission reset");
+
+}
+
+
+/* خانه */
+
+function goHome(){
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* Toast */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    },1800);
+
+}
+
+
+render();
 
 </script>
 
 </body>
-  </html>
+</html>
