@@ -22,8 +22,6 @@ body{
     overflow:hidden;
 }
 
-/* BACKGROUND */
-
 .background{
     position:fixed;
     inset:0;
@@ -49,8 +47,6 @@ body{
     from{transform:translate(0,0)}
     to{transform:translate(180px,180px)}
 }
-
-/* TOP BAR */
 
 .topbar{
     height:70px;
@@ -122,15 +118,11 @@ body{
     color:#ffd45c;
 }
 
-/* MAIN */
-
 .main{
     height:calc(100vh - 125px);
     overflow-y:auto;
     padding:18px 15px 25px;
 }
-
-/* HERO */
 
 .hero{
     min-height:225px;
@@ -199,8 +191,6 @@ body{
     transform:scale(.96);
 }
 
-/* SECTION */
-
 .section-title{
     display:flex;
     justify-content:space-between;
@@ -216,8 +206,6 @@ body{
     color:#657386;
     font-size:11px;
 }
-
-/* MODES */
 
 .modes{
     display:grid;
@@ -267,8 +255,6 @@ body{
 .hard b{color:#ff8a65}
 .nightmare b{color:#ff4d67}
 
-/* QUICK MENU */
-
 .quick{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -289,8 +275,6 @@ body{
     font-size:21px;
     margin-bottom:7px;
 }
-
-/* BOTTOM NAV */
 
 .bottom{
     position:fixed;
@@ -322,8 +306,6 @@ body{
 .nav.active{
     color:#45caff;
 }
-
-/* TOAST */
 
 .toast{
     position:fixed;
@@ -366,11 +348,14 @@ body{
 
         <div class="player-info">
             <b id="playerName">GHOST</b>
-            <div class="level">LEVEL <span id="level">1</span></div>
+            <div class="level">
+                LEVEL <span id="level">1</span>
+            </div>
         </div>
     </div>
 
     <div class="currencies">
+
         <div class="currency">
             💎 <span class="sc" id="sc">250</span>
         </div>
@@ -378,10 +363,10 @@ body{
         <div class="currency">
             🪙 <span class="credits" id="credits">1000</span>
         </div>
+
     </div>
 
 </header>
-
 
 <main class="main">
 
@@ -389,13 +374,18 @@ body{
 
         <div class="hero-content">
 
-            <div class="small-title">SHADOW STRIKE</div>
+            <div class="small-title">
+                SHADOW STRIKE
+            </div>
 
-            <h1>MISSION<br>PROTOCOL</h1>
+            <h1>
+                MISSION<br>
+                PROTOCOL
+            </h1>
 
             <p>
                 Enter the battlefield. Complete missions,
-                unlock weapons and become the ultimate operator.
+                unlock new abilities and become the ultimate operator.
             </p>
 
             <button class="play-btn" onclick="startGame()">
@@ -406,12 +396,10 @@ body{
 
     </section>
 
-
     <div class="section-title">
         <h2>DIFFICULTY</h2>
         <span>SELECT MODE</span>
     </div>
-
 
     <section class="modes">
 
@@ -437,17 +425,15 @@ body{
 
     </section>
 
-
     <div class="section-title">
         <h2>COMMAND CENTER</h2>
     </div>
 
-
     <section class="quick">
 
         <button class="quick-btn" onclick="openPage('weapons')">
-            <div>🔫</div>
-            WEAPONS
+            <div>🎯</div>
+            TRAINING
         </button>
 
         <button class="quick-btn" onclick="openPage('store')">
@@ -464,7 +450,6 @@ body{
 
 </main>
 
-
 <nav class="bottom">
 
     <button class="nav active">
@@ -477,9 +462,9 @@ body{
         MISSIONS
     </button>
 
-    <button class="nav" onclick="openPage('weapons')">
-        <div>🔫</div>
-        ARMORY
+    <button class="nav" onclick="openPage('training')">
+        <div>★</div>
+        TRAINING
     </button>
 
     <button class="nav" onclick="openPage('store')">
@@ -494,13 +479,9 @@ body{
 
 </nav>
 
-
 <div class="toast" id="toast"></div>
 
-
 <script>
-
-/* SAVE SYSTEM */
 
 const defaultData = {
     playerName:"GHOST",
@@ -511,12 +492,15 @@ const defaultData = {
     unlockedLevel:1
 };
 
-let data = JSON.parse(
-    localStorage.getItem("shadowStrike")
-) || defaultData;
+let data;
 
-
-/* LOAD */
+try{
+    data = JSON.parse(
+        localStorage.getItem("shadowStrike")
+    ) || defaultData;
+}catch(error){
+    data = defaultData;
+}
 
 function loadData(){
 
@@ -535,9 +519,6 @@ function loadData(){
 
 loadData();
 
-
-/* SAVE */
-
 function saveData(){
 
     localStorage.setItem(
@@ -546,47 +527,41 @@ function saveData(){
     );
 }
 
-
-/* MODE */
-
 function selectMode(mode){
 
     data.selectedMode = mode;
 
     saveData();
 
-    showToast(mode + " mode selected");
+    showToast(
+        mode + " mode selected"
+    );
 }
-
-
-/* START */
 
 function startGame(){
 
+    saveData();
+
     showToast(
-        "Starting " + data.selectedMode + " mission..."
+        "Starting " +
+        data.selectedMode +
+        " mission..."
     );
 
-    /*
-      در مرحله بعد این قسمت را به
-      game.html وصل می‌کنیم.
-    */
+    setTimeout(function(){
 
+        window.location.href = "game.html";
+
+    },500);
 }
-
-
-/* MENU */
 
 function openPage(page){
 
     showToast(
-        page.toUpperCase() + " module coming soon"
+        page.toUpperCase() +
+        " module coming soon"
     );
-
 }
-
-
-/* TOAST */
 
 function showToast(message){
 
@@ -597,13 +572,14 @@ function showToast(message){
 
     toast.classList.add("show");
 
-    setTimeout(()=>{
-        toast.classList.remove("show");
-    },1800);
+    setTimeout(function(){
 
+        toast.classList.remove("show");
+
+    },1800);
 }
 
 </script>
 
 </body>
-  </html>
+</html>
