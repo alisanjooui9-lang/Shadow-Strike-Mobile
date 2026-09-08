@@ -1,2133 +1,1300 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Shadow Strike — Battle Arena</title><style>
+<title>Shadow Strike - 3D Field</title>
+
+<style>
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  user-select:none;
-  -webkit-user-select:none;
-  touch-action:none;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    touch-action:none;
 }
 
 html,body{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#02050a;
-  color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#05080c;
+    font-family:Arial,sans-serif;
 }
 
-button{
-  font:inherit;
-  color:white;
-  border:0;
-  cursor:pointer;
+#game{
+    position:fixed;
+    inset:0;
 }
 
-#app{
-  position:relative;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at 50% 45%,#172b43 0%,#08111d 38%,#02050a 100%);
+canvas{
+    display:block;
 }
 
-/* ================= MODE SELECT ================= */
+/* HUD */
 
-#modeScreen{
-  position:absolute;
-  inset:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:
-    radial-gradient(circle at 50% 20%,#143c5c55,transparent 45%),
-    #02050aec;
+#hud{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    color:white;
 }
 
-.modeBox{
-  width:min(1050px,96vw);
-  max-height:92vh;
-  overflow:auto;
-  padding:25px;
-  border:1px solid #2ca9ff44;
-  border-radius:24px;
-  background:linear-gradient(145deg,#081522f5,#03070df5);
-  box-shadow:0 25px 80px #000b;
+.top{
+    position:absolute;
+    top:12px;
+    left:15px;
+    right:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
 }
 
-.logo{
-  text-align:center;
-  font-size:clamp(30px,6vw,58px);
-  font-weight:1000;
-  letter-spacing:6px;
-  text-shadow:0 0 25px #21aaff88;
-}
-
-.logo span{
-  color:#36bfff;
-}
-
-.subtitle{
-  text-align:center;
-  color:#8299ad;
-  margin:8px 0 25px;
-  font-size:13px;
-  letter-spacing:2px;
-}
-
-.modeGrid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:12px;
-}
-
-.modeCard{
-  min-height:150px;
-  padding:18px 12px;
-  border:1px solid #ffffff15;
-  border-radius:18px;
-  background:linear-gradient(160deg,#101d2c,#07101a);
-  transition:.2s;
-  text-align:left;
-}
-
-.modeCard:hover{
-  transform:translateY(-4px);
-  border-color:#31b7ff99;
-}
-
-.modeCard.selected{
-  border-color:#36bfff;
-  box-shadow:0 0 25px #149dff33;
-  background:linear-gradient(160deg,#102b40,#07131f);
-}
-
-.modeIcon{
-  font-size:30px;
-  margin-bottom:12px;
-}
-
-.modeName{
-  font-size:18px;
-  font-weight:900;
-}
-
-.modeDesc{
-  color:#7890a4;
-  font-size:11px;
-  margin-top:7px;
-  line-height:1.4;
-}
-
-.modeCount{
-  margin-top:12px;
-  color:#39c0ff;
-  font-size:11px;
-  font-weight:bold;
-}
-
-.start{
-  display:block;
-  width:100%;
-  max-width:500px;
-  margin:25px auto 0;
-  padding:17px;
-  border-radius:15px;
-  background:linear-gradient(90deg,#0878ff,#16c8ff);
-  font-weight:1000;
-  letter-spacing:2px;
-  box-shadow:0 10px 35px #008cff44;
-}
-
-.start:active{
-  transform:scale(.98);
-}
-
-/* ================= MATCHMAKING ================= */
-
-#matchScreen{
-  position:absolute;
-  inset:0;
-  z-index:90;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:#02060cee;
-}
-
-.matchBox{
-  width:min(560px,90vw);
-  text-align:center;
-  padding:30px;
-  border:1px solid #ffffff18;
-  border-radius:25px;
-  background:#07111ceF;
-}
-
-.radar{
-  width:180px;
-  height:180px;
-  margin:0 auto 25px;
-  border-radius:50%;
-  border:1px solid #2ab8ff77;
-  position:relative;
-  overflow:hidden;
-  background:
-    linear-gradient(90deg,transparent 49%,#2ab8ff33 50%,transparent 51%),
-    linear-gradient(transparent 49%,#2ab8ff33 50%,transparent 51%),
-    #06111c;
-}
-
-.radar:after{
-  content:"";
-  position:absolute;
-  width:50%;
-  height:50%;
-  left:50%;
-  top:50%;
-  transform-origin:0 0;
-  background:linear-gradient(90deg,#26bfff88,transparent);
-  animation:scan 1.5s linear infinite;
-}
-
-@keyframes scan{
-  to{transform:rotate(360deg)}
-}
-
-.matchTitle{
-  font-size:24px;
-  font-weight:1000;
-  letter-spacing:3px;
-}
-
-.matchInfo{
-  color:#7d95aa;
-  margin-top:8px;
-}
-
-.dots{
-  margin-top:20px;
-  color:#2cbcff;
-  letter-spacing:8px;
-}
-
-.cancel{
-  margin-top:22px;
-  padding:11px 25px;
-  border:1px solid #ffffff22;
-  border-radius:12px;
-  background:#ffffff0b;
-}
-
-/* ================= ARENA ================= */
-
-#arena{
-  display:none;
-  position:absolute;
-  inset:0;
-}
-
-.arenaGrid{
-  position:absolute;
-  inset:0;
-  background-image:
-    linear-gradient(#2caaff12 1px,transparent 1px),
-    linear-gradient(90deg,#2caaff12 1px,transparent 1px);
-  background-size:55px 55px;
-  transform:perspective(650px) rotateX(55deg) scale(1.5);
-  transform-origin:center bottom;
-  opacity:.45;
-}
-
-.arenaGlow{
-  position:absolute;
-  width:50vw;
-  height:50vw;
-  max-width:500px;
-  max-height:500px;
-  left:50%;
-  top:48%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:#168cff12;
-  box-shadow:0 0 100px #168cff18;
-}
-
-/* ================= HUD ================= */
-
-.hud{
-  position:absolute;
-  left:0;
-  right:0;
-  top:0;
-  height:76px;
-  z-index:30;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 15px;
-  background:linear-gradient(#02050add,transparent);
-}
-
-.hudLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.back{
-  width:42px;
-  height:42px;
-  border-radius:12px;
-  background:#071522dd;
-  border:1px solid #ffffff16;
-}
-
-.modeLabel{
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.wave{
-  font-size:10px;
-  color:#7c94a9;
-  margin-top:4px;
-}
-
-.hudStats{
-  display:flex;
-  gap:8px;
-}
-
-.stat{
-  padding:8px 11px;
-  border-radius:11px;
-  background:#06111bdd;
-  border:1px solid #ffffff15;
-  font-size:12px;
-  font-weight:bold;
-}
-
-/* ================= OBJECTIVE ================= */
-
-.objective{
-  position:absolute;
-  left:15px;
-  top:90px;
-  z-index:20;
-  width:220px;
-  padding:13px;
-  border:1px solid #ffffff15;
-  border-radius:15px;
-  background:#050d16dd;
-  backdrop-filter:blur(8px);
-}
-
-.objTitle{
-  color:#3fc4ff;
-  font-size:10px;
-  letter-spacing:2px;
-  font-weight:bold;
-}
-
-.objText{
-  margin-top:7px;
-  font-weight:900;
-}
-
-.objBar{
-  height:6px;
-  margin-top:10px;
-  background:#ffffff10;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.objFill{
-  height:100%;
-  width:0%;
-  background:#29baff;
-  transition:.3s;
-}
-
-/* ================= MINIMAP ================= */
-
-.minimap{
-  position:absolute;
-  right:15px;
-  top:90px;
-  z-index:20;
-  width:150px;
-  height:150px;
-  border-radius:18px;
-  border:1px solid #39bfff44;
-  background:
-    linear-gradient(#27baff18 1px,transparent 1px),
-    linear-gradient(90deg,#27baff18 1px,transparent 1px),
-    #06101ae8;
-  background-size:25px 25px;
-}
-
-.you{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#43d0ff;
-  box-shadow:0 0 14px #43d0ff;
-  transform:translate(-50%,-50%);
-}
-
-.mapDot{
-  position:absolute;
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#ffcc4b;
-}
-
-/* ================= ARENA ACTORS ================= */
-
-#actors{
-  position:absolute;
-  inset:0;
-  z-index:10;
-}
-
-.actor{
-  position:absolute;
-  width:58px;
-  height:70px;
-  transform:translate(-50%,-50%);
-  text-align:center;
-}
-
-.actorBody{
-  width:48px;
-  height:48px;
-  margin:auto;
-  border-radius:14px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:25px;
-  background:linear-gradient(145deg,#14283a,#07111a);
-  border:2px solid #ffbd45;
-  box-shadow:0 0 18px #ffad3325;
-}
-
-.actor.youActor .actorBody{
-  border-color:#32c7ff;
-  box-shadow:0 0 20px #21baff44;
-}
-
-.actorName{
-  font-size:8px;
-  margin-top:3px;
-  color:#b4c9d8;
-  white-space:nowrap;
+.box{
+    background:rgba(3,8,14,.72);
+    border:1px solid rgba(0,220,255,.45);
+    padding:9px 13px;
+    border-radius:6px;
+    backdrop-filter:blur(5px);
 }
 
 .hp{
-  position:absolute;
-  left:5px;
-  right:5px;
-  top:-7px;
-  height:4px;
-  border-radius:5px;
-  overflow:hidden;
-  background:#ffffff20;
+    color:#42f5a7;
+    font-size:13px;
+    font-weight:bold;
 }
 
-.hpFill{
-  height:100%;
-  width:100%;
-  background:#35d6ff;
-  transition:.2s;
+.energy{
+    color:#35dfff;
+    font-size:12px;
+    margin-top:5px;
 }
 
-/* ================= CENTER ================= */
-
-.centerInfo{
-  position:absolute;
-  left:50%;
-  top:50%;
-  z-index:8;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  pointer-events:none;
+.map{
+    width:110px;
+    height:75px;
+    border:1px solid rgba(0,220,255,.55);
+    background:rgba(0,10,18,.75);
+    position:relative;
 }
 
-.crosshair{
-  width:75px;
-  height:75px;
-  border:1px solid #53cfff66;
-  border-radius:50%;
-  position:relative;
-  box-shadow:0 0 25px #26baff18;
+.map:before,
+.map:after{
+    content:"";
+    position:absolute;
+    background:rgba(0,220,255,.18);
 }
 
-.crosshair:before,
-.crosshair:after{
-  content:"";
-  position:absolute;
-  background:#6ad8ff99;
+.map:before{
+    width:100%;
+    height:1px;
+    top:50%;
 }
 
-.crosshair:before{
-  width:1px;
-  height:100%;
-  left:50%;
+.map:after{
+    height:100%;
+    width:1px;
+    left:50%;
 }
 
-.crosshair:after{
-  width:100%;
-  height:1px;
-  top:50%;
+.playerDot{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:7px;
+    height:7px;
+    background:#00efff;
+    border-radius:50%;
+    box-shadow:0 0 8px #00efff;
 }
 
-.plus{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#fff;
-  transform:translate(-50%,-50%);
+/* CROSSHAIR */
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:28px;
+    height:28px;
+    transform:translate(-50%,-50%);
 }
 
-/* ================= BOTTOM HUD ================= */
-
-.bottomHud{
-  position:absolute;
-  left:15px;
-  right:15px;
-  bottom:15px;
-  z-index:30;
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
+#crosshair:before,
+#crosshair:after{
+    content:"";
+    position:absolute;
+    background:rgba(255,255,255,.85);
 }
 
-.healthBox{
-  width:260px;
+#crosshair:before{
+    width:1px;
+    height:28px;
+    left:13px;
 }
 
-.healthText{
-  display:flex;
-  justify-content:space-between;
-  font-size:11px;
-  font-weight:bold;
-  margin-bottom:6px;
+#crosshair:after{
+    height:1px;
+    width:28px;
+    top:13px;
 }
 
-.healthBar,
-.energyBar{
-  height:10px;
-  border-radius:10px;
-  overflow:hidden;
-  background:#ffffff12;
-  margin-bottom:7px;
+/* MOBILE CONTROLS */
+
+#controls{
+    position:absolute;
+    inset:0;
 }
 
-.healthFill{
-  height:100%;
-  width:100%;
-  background:#32d6ff;
-  transition:.25s;
-}
-
-.energyFill{
-  height:100%;
-  width:100%;
-  background:#9c63ff;
-  transition:.25s;
-}
-
-.controls{
-  display:flex;
-  gap:9px;
-  align-items:flex-end;
-}
-
-.control{
-  width:64px;
-  height:64px;
-  border-radius:18px;
-  background:#07131fe8;
-  border:1px solid #ffffff20;
-  box-shadow:0 8px 25px #0008;
-  font-size:22px;
-}
-
-.control.primary{
-  width:84px;
-  height:84px;
-  border-radius:50%;
-  background:linear-gradient(145deg,#087dff,#19c5ff);
-  box-shadow:0 0 30px #009cff55;
-  font-size:25px;
-}
-
-.control:active{
-  transform:scale(.92);
-}
-
-/* ================= LEFT JOYSTICK ================= */
-
-.joyArea{
-  position:absolute;
-  left:25px;
-  bottom:115px;
-  z-index:25;
-  width:145px;
-  height:145px;
-  border-radius:50%;
-  border:1px solid #ffffff18;
-  background:#ffffff05;
-}
-
-.joy{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:65px;
-  height:65px;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  background:#13283a;
-  border:2px solid #36bfff66;
-  box-shadow:0 0 20px #16aaff22;
-}
-
-/* ================= SCORE POPUP ================= */
-
-.popup{
-  position:absolute;
-  left:50%;
-  top:34%;
-  z-index:60;
-  transform:translate(-50%,-50%);
-  font-size:25px;
-  font-weight:1000;
-  color:#55d5ff;
-  text-shadow:0 0 20px #18baff;
-  pointer-events:none;
-  animation:pop 1s forwards;
-}
-
-@keyframes pop{
-  0%{opacity:0;transform:translate(-50%,0) scale(.7)}
-  20%{opacity:1}
-  100%{opacity:0;transform:translate(-50%,-80px) scale(1.15)}
-}
-
-/* ================= RESULT ================= */
-
-#result{
-  position:absolute;
-  inset:0;
-  z-index:200;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:#02060df2;
-}
-
-.resultBox{
-  width:min(600px,92vw);
-  padding:30px;
-  border-radius:25px;
-  text-align:center;
-  background:linear-gradient(145deg,#0a1725,#03080f);
-  border:1px solid #36bfff44;
-  box-shadow:0 30px 100px #000;
-}
-
-.resultTitle{
-  font-size:42px;
-  font-weight:1000;
-  letter-spacing:5px;
-}
-
-.resultSub{
-  color:#7d94a8;
-  margin-top:7px;
-}
-
-.resultGrid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  margin:25px 0;
-}
-
-.resultStat{
-  padding:16px 8px;
-  border-radius:15px;
-  background:#ffffff08;
-  border:1px solid #ffffff12;
-}
-
-.resultStat b{
-  display:block;
-  font-size:22px;
-  margin-bottom:5px;
-}
-
-.resultStat span{
-  color:#71879a;
-  font-size:10px;
-}
-
-.resultButtons{
-  display:flex;
-  gap:10px;
-}
-
-.resultButtons button{
-  flex:1;
-  padding:14px;
-  border-radius:13px;
-  background:#ffffff0b;
-  border:1px solid #ffffff18;
-}
-
-.resultButtons .again{
-  background:linear-gradient(90deg,#087dff,#19bfff);
-  font-weight:bold;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media(max-width:800px){
-
-  .modeGrid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .modeCard:last-child{
-    grid-column:span 2;
-  }
-
-  .objective{
-    width:175px;
-  }
-
-  .minimap{
-    width:115px;
-    height:115px;
-  }
-
-  .healthBox{
-    width:180px;
-  }
-
-  .joyArea{
+#joystick{
+    position:absolute;
+    left:25px;
+    bottom:25px;
     width:125px;
     height:125px;
-  }
+    border:2px solid rgba(0,220,255,.4);
+    border-radius:50%;
+    background:rgba(0,10,18,.28);
 }
 
-@media(max-height:500px){
-
-  .hud{
+#stick{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:60px;
     height:60px;
-  }
-
-  .objective{
-    top:70px;
-  }
-
-  .minimap{
-    top:70px;
-  }
-
-  .bottomHud{
-    bottom:8px;
-  }
-
-  .joyArea{
-    bottom:90px;
-  }
-
-  .control{
-    width:55px;
-    height:55px;
-  }
-
-  .control.primary{
-    width:70px;
-    height:70px;
-  }
-}
-</style></head><body><div id="app"><!-- ================= MODE SCREEN ================= --><section id="modeScreen">  <div class="modeBox"><div class="logo">
-  SHADOW <span>STRIKE</span>
-</div>
-
-<div class="subtitle">
-  SELECT BATTLE FORMAT
-</div>
-
-<div class="modeGrid">
-
-  <button class="modeCard selected" data-mode="1v1">
-    <div class="modeIcon">⚡</div>
-    <div class="modeName">1v1</div>
-    <div class="modeDesc">
-      Solo duel against one simulated rival.
-    </div>
-    <div class="modeCount">
-      2 PLAYERS
-    </div>
-  </button>
-
-  <button class="modeCard" data-mode="2v2">
-    <div class="modeIcon">👥</div>
-    <div class="modeName">2v2</div>
-    <div class="modeDesc">
-      Small team arena with fast rounds.
-    </div>
-    <div class="modeCount">
-      4 PLAYERS
-    </div>
-  </button>
-
-  <button class="modeCard" data-mode="5v5">
-    <div class="modeIcon">🛡️</div>
-    <div class="modeName">5v5</div>
-    <div class="modeDesc">
-      Team battle with multiple objectives.
-    </div>
-    <div class="modeCount">
-      10 PLAYERS
-    </div>
-  </button>
-
-  <button class="modeCard" data-mode="50">
-    <div class="modeIcon">🌐</div>
-    <div class="modeName">BATTLE 50</div>
-    <div class="modeDesc">
-      Large simulated arena with 50 participants.
-    </div>
-    <div class="modeCount">
-      50 PLAYERS
-    </div>
-  </button>
-
-  <button class="modeCard" data-mode="100">
-    <div class="modeIcon">👑</div>
-    <div class="modeName">BATTLE 100</div>
-    <div class="modeDesc">
-      Massive arena with 100 simulated participants.
-    </div>
-    <div class="modeCount">
-      100 PLAYERS
-    </div>
-  </button>
-
-</div>
-
-<button class="start" id="startButton">
-  ▶ START MATCH
-</button>
-
-  </div></section><!-- ================= MATCHMAKING ================= --><section id="matchScreen">  <div class="matchBox"><div class="radar"></div>
-
-<div class="matchTitle">
-  MATCHMAKING
-</div>
-
-<div class="matchInfo" id="matchInfo">
-  Searching for players...
-</div>
-
-<div class="dots">● ● ●</div>
-
-<button class="cancel" id="cancelMatch">
-  CANCEL
-</button>
-
-  </div></section><!-- ================= ARENA ================= --><section id="arena">  <div class="arenaGrid"></div>
-  <div class="arenaGlow"></div>  <!-- HUD -->  <div class="hud"><div class="hudLeft">
-
-  <button class="back" id="leaveGame">
-    ←
-  </button>
-
-  <div>
-    <div class="modeLabel" id="hudMode">
-      1v1
-    </div>
-
-    <div class="wave">
-      WAVE <span id="waveNumber">1</span>
-    </div>
-  </div>
-
-</div>
-
-<div class="hudStats">
-
-  <div class="stat">
-    🎯 <span id="score">0</span>
-  </div>
-
-  <div class="stat">
-    🏆 <span id="rank">ROOKIE</span>
-  </div>
-
-  <div class="stat">
-    ⭐ <span id="xp">0</span>
-  </div>
-
-</div>
-
-  </div>  <!-- OBJECTIVE -->  <div class="objective"><div class="objTitle">
-  CURRENT OBJECTIVE
-</div>
-
-<div class="objText" id="objectiveText">
-  Tag opponents
-</div>
-
-<div class="objBar">
-  <div class="objFill" id="objFill"></div>
-</div>
-
-<div style="font-size:10px;color:#71889b;margin-top:5px">
-  <span id="objCurrent">0</span> /
-  <span id="objGoal">5</span>
-</div>
-
-  </div>  <!-- MINIMAP -->  <div class="minimap" id="minimap"><div class="you"></div>
-
-  </div>  <!-- ACTORS -->  <div id="actors"></div>  <!-- CENTER CROSSHAIR -->  <div class="centerInfo"><div class="crosshair">
-  <div class="plus"></div>
-</div>
-
-  </div>  <!-- JOYSTICK -->  <div class="joyArea" id="joyArea">
-    <div class="joy" id="joy"></div>
-  </div>  <!-- BOTTOM HUD -->  <div class="bottomHud"><div class="healthBox">
-
-  <div class="healthText">
-    <span>ENERGY CORE</span>
-    <span id="healthText">100 / 100</span>
-  </div>
-
-  <div class="healthBar">
-    <div class="healthFill" id="healthFill"></div>
-  </div>
-
-  <div class="healthText">
-    <span>ENERGY</span>
-    <span id="energyText">100 / 100</span>
-  </div>
-
-  <div class="energyBar">
-    <div class="energyFill" id="energyFill"></div>
-  </div>
-
-</div>
-
-
-<div class="controls">
-
-  <button class="control" id="ability">
-    ✦
-  </button>
-
-  <button class="control" id="dash">
-    ➤
-  </button>
-
-  <button class="control primary" id="pulse">
-    ⚡
-  </button>
-
-</div>
-
-  </div></section><!-- ================= RESULT ================= --><section id="result">  <div class="resultBox"><div class="resultTitle" id="resultTitle">
-  VICTORY
-</div>
-
-<div class="resultSub" id="resultSub">
-  Arena completed
-</div>
-
-<div class="resultGrid">
-
-  <div class="resultStat">
-    <b id="finalScore">0</b>
-    <span>SCORE</span>
-  </div>
-
-  <div class="resultStat">
-    <b id="finalXP">0</b>
-    <span>XP</span>
-  </div>
-
-  <div class="resultStat">
-    <b id="finalCredits">0</b>
-    <span>CREDITS</span>
-  </div>
-
-</div>
-
-<div class="resultButtons">
-
-  <button id="backLobby">
-    LOBBY
-  </button>
-
-  <button class="again" id="playAgain">
-    PLAY AGAIN
-  </button>
-
-</div>
-
-  </div></section></div><script>
-
-/* =========================================================
-   SHADOW STRIKE
-   BATTLE ARENA ENGINE
-========================================================= */
-
-const $ = id => document.getElementById(id);
-
-
-/* ================= PLAYER DATA ================= */
-
-const saveKey = "shadowStrike";
-
-let player = JSON.parse(
-  localStorage.getItem(saveKey) || "{}"
-);
-
-if(!player.playerName){
-  player.playerName = "GHOST";
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:rgba(0,190,230,.25);
+    border:2px solid rgba(0,230,255,.7);
+    box-shadow:0 0 20px rgba(0,220,255,.25);
 }
 
-if(!player.level){
-  player.level = 1;
+.action{
+    position:absolute;
+    width:67px;
+    height:67px;
+    border-radius:50%;
+    border:1px solid rgba(0,230,255,.7);
+    background:rgba(3,12,21,.72);
+    color:white;
+    font-size:22px;
+    box-shadow:0 0 18px rgba(0,220,255,.18);
 }
 
-if(!player.xp){
-  player.xp = 0;
+#ability{
+    right:30px;
+    bottom:32px;
 }
 
-if(!player.credits){
-  player.credits = 1000;
+#shield{
+    right:108px;
+    bottom:70px;
 }
 
-if(!player.sc){
-  player.sc = 250;
+#scan{
+    right:185px;
+    bottom:38px;
 }
 
-function savePlayer(){
-  localStorage.setItem(
-    saveKey,
-    JSON.stringify(player)
-  );
+#exit{
+    position:absolute;
+    top:12px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:8px 15px;
+    border:1px solid rgba(255,255,255,.3);
+    background:rgba(0,0,0,.55);
+    color:white;
+    border-radius:5px;
+    pointer-events:auto;
 }
 
+/* LOADING */
 
-/* ================= GAME STATE ================= */
+#loading{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:#04070c;
+    color:#00eaff;
+    letter-spacing:3px;
+}
 
-let selectedMode = "1v1";
+.loader{
+    width:190px;
+    height:4px;
+    margin-top:18px;
+    background:#182331;
+    overflow:hidden;
+}
 
-let gameRunning = false;
+.loader i{
+    display:block;
+    height:100%;
+    width:40%;
+    background:#00eaff;
+    animation:load 1.2s infinite;
+}
 
-let score = 0;
-let wave = 1;
+@keyframes load{
+    from{transform:translateX(-100%)}
+    to{transform:translateX(500%)}
+}
 
-let health = 100;
-let energy = 100;
+@media(max-height:430px){
 
-let objective = 0;
-
-let objectiveGoal = 5;
-
-let tagged = 0;
-
-let totalPlayers = 2;
-
-let actors = [];
-
-let animationLoop;
-
-let gameTimer;
-
-let secondsLeft = 120;
-
-
-/* ================= MODE DATA ================= */
-
-const modes = {
-
-  "1v1":{
-    players:2,
-    waves:5,
-    goal:5,
-    reward:100,
-    xp:80
-  },
-
-  "2v2":{
-    players:4,
-    waves:6,
-    goal:8,
-    reward:160,
-    xp:120
-  },
-
-  "5v5":{
-    players:10,
-    waves:8,
-    goal:12,
-    reward:250,
-    xp:180
-  },
-
-  "50":{
-    players:50,
-    waves:10,
-    goal:20,
-    reward:500,
-    xp:300
-  },
-
-  "100":{
-    players:100,
-    waves:12,
-    goal:30,
-    reward:1000,
-    xp:500
-  }
-
-};
-
-
-/* ================= MODE SELECT ================= */
-
-document.querySelectorAll(".modeCard")
-.forEach(card=>{
-
-  card.addEventListener("click",()=>{
-
-    document.querySelectorAll(".modeCard")
-    .forEach(x=>x.classList.remove("selected"));
-
-    card.classList.add("selected");
-
-    selectedMode = card.dataset.mode;
-
-  });
-
-});
-
-
-$("startButton").onclick = startMatch;
-
-
-/* ================= MATCHMAKING ================= */
-
-function startMatch(){
-
-  $("modeScreen").style.display = "none";
-
-  $("matchScreen").style.display = "flex";
-
-  totalPlayers = modes[selectedMode].players;
-
-  $("matchInfo").textContent =
-    "Preparing " +
-    totalPlayers +
-    " player arena...";
-
-  let count = 0;
-
-  const interval = setInterval(()=>{
-
-    count++;
-
-    const found =
-      Math.min(
-        totalPlayers,
-        Math.floor(
-          totalPlayers *
-          (count / 4)
-        )
-      );
-
-    $("matchInfo").textContent =
-      "Players ready: " +
-      found +
-      " / " +
-      totalPlayers;
-
-    if(count >= 4){
-
-      clearInterval(interval);
-
-      setTimeout(()=>{
-        $("matchScreen").style.display = "none";
-        launchArena();
-      },500);
-
+    #joystick{
+        width:100px;
+        height:100px;
+        bottom:15px;
+        left:18px;
     }
 
-  },500);
-
-}
-
-
-/* ================= CANCEL ================= */
-
-$("cancelMatch").onclick = ()=>{
-
-  $("matchScreen").style.display = "none";
-
-  $("modeScreen").style.display = "flex";
-
-};
-
-
-/* ================= ARENA START ================= */
-
-function launchArena(){
-
-  $("arena").style.display = "block";
-
-  $("hudMode").textContent =
-    selectedMode === "50"
-      ? "BATTLE 50"
-      : selectedMode === "100"
-        ? "BATTLE 100"
-        : selectedMode;
-
-  score = 0;
-  wave = 1;
-  health = 100;
-  energy = 100;
-  objective = 0;
-  tagged = 0;
-  secondsLeft = 120;
-
-  objectiveGoal =
-    modes[selectedMode].goal;
-
-  gameRunning = true;
-
-  updateHUD();
-
-  createActors();
-
-  startGameLoop();
-
-}
-
-
-/* ================= CREATE ACTORS ================= */
-
-function createActors(){
-
-  const container = $("actors");
-
-  container.innerHTML = "";
-
-  actors = [];
-
-  /*
-    To keep the mobile browser fast,
-    only a manageable number of visible
-    simulated actors are rendered at once.
-  */
-
-  const visibleCount =
-    selectedMode === "1v1" ? 1 :
-    selectedMode === "2v2" ? 3 :
-    selectedMode === "5v5" ? 7 :
-    selectedMode === "50" ? 18 :
-    25;
-
-  for(let i=0;i<visibleCount;i++){
-
-    const actor = {
-
-      id:i,
-
-      x:15 + Math.random()*70,
-
-      y:25 + Math.random()*55,
-
-      hp:100,
-
-      speed:
-        .015 +
-        Math.random()*.025,
-
-      dirX:
-        Math.random()>.5 ? 1 : -1,
-
-      dirY:
-        Math.random()>.5 ? 1 : -1,
-
-      active:true
-
-    };
-
-    actors.push(actor);
-
-    const el =
-      document.createElement("div");
-
-    el.className = "actor";
-
-    el.dataset.id = i;
-
-    el.innerHTML = `
-
-      <div class="hp">
-        <div class="hpFill"></div>
-      </div>
-
-      <div class="actorBody">
-        🤖
-      </div>
-
-      <div class="actorName">
-        BOT-${String(i+1).padStart(2,"0")}
-      </div>
-
-    `;
-
-    el.style.left = actor.x + "%";
-    el.style.top = actor.y + "%";
-
-    el.onclick = ()=>tagActor(actor);
-
-    container.appendChild(el);
-
-    addMapDot(actor);
-
-  }
-
-}
-
-
-/* ================= MINI MAP ================= */
-
-function addMapDot(actor){
-
-  const dot =
-    document.createElement("div");
-
-  dot.className = "mapDot";
-
-  dot.style.left =
-    actor.x + "%";
-
-  dot.style.top =
-    actor.y + "%";
-
-  $("minimap").appendChild(dot);
-
-  actor.mapDot = dot;
-
-}
-
-
-/* ================= GAME LOOP ================= */
-
-function startGameLoop(){
-
-  cancelAnimationFrame(animationLoop);
-
-  function loop(){
-
-    if(!gameRunning) return;
-
-    updateActors();
-
-    animationLoop =
-      requestAnimationFrame(loop);
-
-  }
-
-  loop();
-
-}
-
-
-/* ================= ACTOR MOVEMENT ================= */
-
-function updateActors(){
-
-  actors.forEach(actor=>{
-
-    if(!actor.active) return;
-
-    actor.x +=
-      actor.dirX *
-      actor.speed;
-
-    actor.y +=
-      actor.dirY *
-      actor.speed;
-
-    if(actor.x < 8 || actor.x > 92){
-      actor.dirX *= -1;
+    #stick{
+        width:48px;
+        height:48px;
     }
 
-    if(actor.y < 20 || actor.y > 82){
-      actor.dirY *= -1;
+    .action{
+        width:55px;
+        height:55px;
     }
 
-    const el =
-      document.querySelector(
-        `.actor[data-id="${actor.id}"]`
-      );
-
-    if(el){
-
-      el.style.left =
-        actor.x + "%";
-
-      el.style.top =
-        actor.y + "%";
-
+    #ability{
+        right:20px;
+        bottom:18px;
     }
 
-    if(actor.mapDot){
-
-      actor.mapDot.style.left =
-        (actor.x*.82+9) + "%";
-
-      actor.mapDot.style.top =
-        (actor.y*.65+18) + "%";
-
+    #shield{
+        right:82px;
+        bottom:55px;
     }
 
-  });
-
+    #scan{
+        right:145px;
+        bottom:18px;
+    }
 }
+</style>
+</head>
+
+<body>
+
+<div id="game"></div>
+
+<div id="loading">
+    SHADOW STRIKE
+    <div style="font-size:10px;margin-top:8px;color:#71869c">
+        LOADING 3D FIELD
+    </div>
+    <div class="loader"><i></i></div>
+</div>
+
+<div id="hud">
+
+    <div class="top">
+
+        <div class="box">
+            <div class="hp">◆ HP 100</div>
+            <div class="energy">⚡ ENERGY 100</div>
+        </div>
+
+        <div class="map">
+            <div class="playerDot"></div>
+        </div>
+
+    </div>
+
+    <div id="crosshair"></div>
+
+    <button id="exit">× EXIT</button>
+
+    <div id="controls">
+
+        <div id="joystick">
+            <div id="stick"></div>
+        </div>
+
+        <button class="action" id="ability">⚡</button>
+        <button class="action" id="shield">🛡️</button>
+        <button class="action" id="scan">📡</button>
+
+    </div>
+
+</div>
 
 
-/* ================= TAG / ENERGY PULSE ================= */
+<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
 
-$("pulse").onclick = ()=>{
+<script>
 
-  if(!gameRunning) return;
+/* =====================================
+   SHADOW STRIKE 3D FIELD
+===================================== */
 
-  if(energy < 15){
+let scene;
+let camera;
+let renderer;
 
-    showPopup("LOW ENERGY");
+let clock = new THREE.Clock();
 
-    return;
+let velocity = new THREE.Vector3();
 
-  }
+let moveForward = false;
+let moveBackward = false;
+let moveLeft = false;
+let moveRight = false;
 
-  energy -= 15;
+let yaw = 0;
+let pitch = 0;
 
-  /*
-    Select the closest active bot
-    to the center of the arena.
-  */
+let touchLook = null;
+let joystickTouch = null;
 
-  let best = null;
-
-  let bestDistance = Infinity;
-
-  actors.forEach(actor=>{
-
-    if(!actor.active) return;
-
-    const dx =
-      actor.x - 50;
-
-    const dy =
-      actor.y - 50;
-
-    const distance =
-      Math.sqrt(dx*dx+dy*dy);
-
-    if(distance < bestDistance){
-
-      bestDistance = distance;
-
-      best = actor;
-
-    }
-
-  });
-
-  if(best){
-
-    tagActor(best);
-
-  }else{
-
-    showPopup("NO TARGET");
-
-  }
-
-  updateHUD();
-
-};
+const worldSize = 1800;
 
 
-/* ================= TAG ACTOR ================= */
+/* =====================================
+   START
+===================================== */
 
-function tagActor(actor){
+function init(){
 
-  if(!gameRunning) return;
+    scene = new THREE.Scene();
 
-  if(!actor.active) return;
+    scene.background =
+        new THREE.Color(0x07101a);
 
-  actor.hp -= 50;
+    scene.fog =
+        new THREE.Fog(
+            0x07101a,
+            180,
+            900
+        );
 
-  energy =
-    Math.min(100,energy+5);
 
-  score += 100;
+    /* CAMERA */
 
-  tagged++;
-
-  objective++;
-
-  showPopup("+100");
-
-  const el =
-    document.querySelector(
-      `.actor[data-id="${actor.id}"]`
+    camera = new THREE.PerspectiveCamera(
+        72,
+        innerWidth / innerHeight,
+        0.1,
+        1800
     );
 
-  if(el){
-
-    const fill =
-      el.querySelector(".hpFill");
-
-    fill.style.width =
-      Math.max(0,actor.hp) + "%";
-
-  }
-
-  if(actor.hp <= 0){
-
-    actor.active = false;
-
-    if(el){
-
-      el.style.opacity = "0.15";
-      el.style.transform =
-        "translate(-50%,-50%) scale(.75)";
-
-    }
-
-    if(actor.mapDot){
-
-      actor.mapDot.style.opacity = "0.1";
-
-    }
-
-  }
-
-  updateObjective();
-
-  updateHUD();
-
-  checkWave();
-
-}
-
-
-/* ================= OBJECTIVE ================= */
-
-function updateObjective(){
-
-  $("objCurrent").textContent =
-    Math.min(objective,objectiveGoal);
-
-  $("objGoal").textContent =
-    objectiveGoal;
-
-  const percent =
-    Math.min(
-      100,
-      (objective/objectiveGoal)*100
+    camera.position.set(
+        0,
+        3.2,
+        180
     );
 
-  $("objFill").style.width =
-    percent + "%";
 
+    /* RENDERER */
+
+    renderer =
+        new THREE.WebGLRenderer({
+            antialias:true,
+            powerPreference:"high-performance"
+        });
+
+    renderer.setPixelRatio(
+        Math.min(devicePixelRatio,1.5)
+    );
+
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
+
+    renderer.shadowMap.enabled = true;
+
+    renderer.shadowMap.type =
+        THREE.PCFSoftShadowMap;
+
+    document
+        .getElementById("game")
+        .appendChild(renderer.domElement);
+
+
+    /* LIGHT */
+
+    const hemi =
+        new THREE.HemisphereLight(
+            0x9bc9ff,
+            0x172015,
+            1.7
+        );
+
+    scene.add(hemi);
+
+
+    const sun =
+        new THREE.DirectionalLight(
+            0xffffff,
+            2.2
+        );
+
+    sun.position.set(
+        -250,
+        400,
+        180
+    );
+
+    sun.castShadow = true;
+
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
+
+    sun.shadow.camera.left = -500;
+    sun.shadow.camera.right = 500;
+    sun.shadow.camera.top = 500;
+    sun.shadow.camera.bottom = -500;
+
+    scene.add(sun);
+
+
+    createTerrain();
+
+    createCity();
+
+    createRoads();
+
+    createProps();
+
+    createSkyDetails();
+
+
+    setupControls();
+
+    window.addEventListener(
+        "resize",
+        resize
+    );
+
+
+    setTimeout(()=>{
+
+        document.getElementById(
+            "loading"
+        ).style.display="none";
+
+    },1200);
+
+
+    animate();
 }
 
 
-/* ================= WAVE ================= */
+/* =====================================
+   TERRAIN
+===================================== */
 
-function checkWave(){
+function createTerrain(){
 
-  if(objective >= objectiveGoal){
+    const groundGeometry =
+        new THREE.PlaneGeometry(
+            worldSize,
+            worldSize,
+            100,
+            100
+        );
 
-    if(wave >= modes[selectedMode].waves){
+    const groundMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0x18241b,
+            roughness:1
+        });
 
-      winGame();
+    const ground =
+        new THREE.Mesh(
+            groundGeometry,
+            groundMaterial
+        );
 
-      return;
+    ground.rotation.x =
+        -Math.PI/2;
 
+    ground.receiveShadow = true;
+
+    scene.add(ground);
+
+
+    /* GRID */
+
+    const grid =
+        new THREE.GridHelper(
+            worldSize,
+            180,
+            0x263a32,
+            0x15231f
+        );
+
+    grid.position.y=.02;
+
+    grid.material.transparent=true;
+    grid.material.opacity=.22;
+
+    scene.add(grid);
+}
+
+
+/* =====================================
+   CITY
+===================================== */
+
+function createCity(){
+
+    const positions = [
+
+        [-330,-260,120,80,100],
+        [-160,-290,90,100,150],
+        [40,-300,130,90,110],
+        [240,-260,90,120,170],
+
+        [-390,-70,100,100,130],
+        [-220,-80,130,90,90],
+        [40,-80,90,100,150],
+        [260,-60,130,100,120],
+
+        [-330,120,100,80,170],
+        [-120,130,120,110,110],
+        [110,120,90,100,160],
+        [310,130,120,90,100],
+
+        [-250,310,150,100,130],
+        [20,300,100,120,180],
+        [260,300,130,90,130]
+
+    ];
+
+
+    positions.forEach(
+        data=>{
+            createBuilding(
+                data[0],
+                data[1],
+                data[2],
+                data[3],
+                data[4]
+            );
+        }
+    );
+}
+
+
+function createBuilding(
+    x,
+    z,
+    width,
+    depth,
+    height
+){
+
+    const geometry =
+        new THREE.BoxGeometry(
+            width,
+            height,
+            depth
+        );
+
+    const material =
+        new THREE.MeshStandardMaterial({
+            color:
+                Math.random()>.5
+                ?0x27323b
+                :0x202b35,
+
+            roughness:.85
+        });
+
+    const building =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    building.position.set(
+        x,
+        height/2,
+        z
+    );
+
+    building.castShadow=true;
+    building.receiveShadow=true;
+
+    scene.add(building);
+
+
+    /* ROOF */
+
+    const roofGeometry =
+        new THREE.BoxGeometry(
+            width+5,
+            4,
+            depth+5
+        );
+
+    const roofMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0x101820
+        });
+
+    const roof =
+        new THREE.Mesh(
+            roofGeometry,
+            roofMaterial
+        );
+
+    roof.position.set(
+        x,
+        height+2,
+        z
+    );
+
+    roof.castShadow=true;
+
+    scene.add(roof);
+
+
+    /* WINDOWS */
+
+    const windowMaterial =
+        new THREE.MeshBasicMaterial({
+            color:0x35d9ff
+        });
+
+    for(
+        let yy=18;
+        yy<height-8;
+        yy+=18
+    ){
+
+        for(
+            let xx=-width/2+12;
+            xx<width/2-5;
+            xx+=22
+        ){
+
+            const w =
+                new THREE.Mesh(
+                    new THREE.BoxGeometry(
+                        8,
+                        7,
+                        .5
+                    ),
+                    windowMaterial
+                );
+
+            w.position.set(
+                x+xx,
+                yy,
+                z-depth/2-.3
+            );
+
+            scene.add(w);
+        }
     }
+}
 
-    wave++;
 
-    objective = 0;
+/* =====================================
+   ROADS
+===================================== */
 
-    objectiveGoal +=
-      Math.ceil(
-        modes[selectedMode].goal*.35
-      );
+function createRoads(){
 
-    actors.forEach(actor=>{
+    const roadMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0x10161b,
+            roughness:.95
+        });
 
-      actor.hp = 100;
 
-      actor.active = true;
+    const roads = [
 
-      actor.x =
-        15+Math.random()*70;
+        [0,0,130,worldSize],
 
-      actor.y =
-        25+Math.random()*55;
+        [0,0,worldSize,130],
+
+        [-350,0,70,worldSize],
+
+        [350,0,70,worldSize],
+
+        [0,-350,worldSize,70],
+
+        [0,350,worldSize,70]
+
+    ];
+
+
+    roads.forEach(r=>{
+
+        const mesh =
+            new THREE.Mesh(
+                new THREE.PlaneGeometry(
+                    r[2],
+                    r[3]
+                ),
+                roadMaterial
+            );
+
+        mesh.rotation.x =
+            -Math.PI/2;
+
+        mesh.position.set(
+            r[0],
+            .05,
+            r[1]
+        );
+
+        scene.add(mesh);
 
     });
 
-    document
-      .querySelectorAll(".actor")
-      .forEach(el=>{
 
-        el.style.opacity = "1";
+    /* ROAD LINES */
 
-        el.style.transform =
-          "translate(-50%,-50%)";
+    const lineMaterial =
+        new THREE.MeshBasicMaterial({
+            color:0x58645e
+        });
 
-        const fill =
-          el.querySelector(".hpFill");
+    for(
+        let x=-850;
+        x<850;
+        x+=25
+    ){
 
-        fill.style.width = "100%";
+        const line =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    10,
+                    .08,
+                    1.5
+                ),
+                lineMaterial
+            );
 
-      });
+        line.position.set(
+            x,
+            .12,
+            0
+        );
 
-    showPopup(
-      "WAVE " + wave
-    );
-
-    updateHUD();
-    updateObjective();
-
-  }
-
+        scene.add(line);
+    }
 }
 
 
-/* ================= ABILITY ================= */
+/* =====================================
+   PROPS
+===================================== */
 
-$("ability").onclick = ()=>{
+function createProps(){
 
-  if(!gameRunning) return;
+    for(
+        let i=0;
+        i<170;
+        i++
+    ){
 
-  if(energy < 40){
+        const x =
+            (Math.random()-.5)*1500;
 
-    showPopup("NEED ENERGY");
+        const z =
+            (Math.random()-.5)*1500;
 
-    return;
 
-  }
+        /* CRATES */
 
-  energy -= 40;
+        if(Math.random()<.45){
 
-  let gained = 0;
+            const size =
+                4+Math.random()*5;
 
-  actors.forEach(actor=>{
+            const crate =
+                new THREE.Mesh(
+                    new THREE.BoxGeometry(
+                        size,
+                        size,
+                        size
+                    ),
+                    new THREE.MeshStandardMaterial({
+                        color:0x514b3b
+                    })
+                );
 
-    if(actor.active){
+            crate.position.set(
+                x,
+                size/2,
+                z
+            );
 
-      actor.hp -= 35;
+            crate.castShadow=true;
 
-      gained += 35;
-
-      if(actor.hp <= 0){
-
-        actor.hp = 0;
-
-        actor.active = false;
-
-        const el =
-          document.querySelector(
-            `.actor[data-id="${actor.id}"]`
-          );
-
-        if(el){
-
-          el.style.opacity=".15";
+            scene.add(crate);
 
         }
 
-      }
 
+        /* TOWERS */
+
+        else{
+
+            const h =
+                8+Math.random()*20;
+
+            const pole =
+                new THREE.Mesh(
+                    new THREE.CylinderGeometry(
+                        .7,
+                        .9,
+                        h,
+                        8
+                    ),
+                    new THREE.MeshStandardMaterial({
+                        color:0x252d32
+                    })
+                );
+
+            pole.position.set(
+                x,
+                h/2,
+                z
+            );
+
+            pole.castShadow=true;
+
+            scene.add(pole);
+        }
     }
-
-  });
-
-  score += gained;
-
-  objective += Math.ceil(gained/100);
-
-  showPopup("✦ AREA PULSE");
-
-  updateHUD();
-  updateObjective();
-  checkWave();
-
-};
+}
 
 
-/* ================= DASH ================= */
+/* =====================================
+   SKY
+===================================== */
 
-$("dash").onclick = ()=>{
+function createSkyDetails(){
 
-  if(!gameRunning) return;
+    const moon =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                45,
+                32,
+                32
+            ),
+            new THREE.MeshBasicMaterial({
+                color:0x9dc8e6
+            })
+        );
 
-  showPopup("DASH");
-
-  energy =
-    Math.max(
-      0,
-      energy-8
+    moon.position.set(
+        -500,
+        500,
+        -700
     );
 
-  updateHUD();
-
-};
+    scene.add(moon);
 
 
-/* ================= TIMER ================= */
+    /* DISTANT MOUNTAINS */
 
-gameTimer =
-  setInterval(()=>{
+    for(
+        let i=0;
+        i<35;
+        i++
+    ){
 
-    if(!gameRunning) return;
+        const h =
+            60+Math.random()*180;
 
-    secondsLeft--;
+        const mountain =
+            new THREE.Mesh(
+                new THREE.ConeGeometry(
+                    80+Math.random()*80,
+                    h,
+                    5
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:0x111b1c,
+                    roughness:1
+                })
+            );
 
-    if(secondsLeft <= 0){
+        const angle =
+            i/35*Math.PI*2;
 
-      loseGame();
+        const radius=700;
 
+        mountain.position.set(
+            Math.cos(angle)*radius,
+            h/2,
+            Math.sin(angle)*radius
+        );
+
+        scene.add(mountain);
     }
-
-  },1000);
-
-
-/* ================= DAMAGE SIMULATION ================= */
-
-setInterval(()=>{
-
-  if(!gameRunning) return;
-
-  if(Math.random() < .18){
-
-    const damage =
-      2 + Math.floor(Math.random()*5);
-
-    health =
-      Math.max(
-        0,
-        health-damage
-      );
-
-    updateHUD();
-
-    if(health <= 0){
-
-      loseGame();
-
-    }
-
-  }
-
-},1300);
+}
 
 
-/* ================= ENERGY REGEN ================= */
+/* =====================================
+   CONTROLS
+===================================== */
 
-setInterval(()=>{
+function setupControls(){
 
-  if(!gameRunning) return;
+    const joy =
+        document.getElementById("joystick");
 
-  energy =
-    Math.min(
-      100,
-      energy+3
+    const stick =
+        document.getElementById("stick");
+
+
+    joy.addEventListener(
+        "touchstart",
+        e=>{
+            joystickTouch =
+                e.changedTouches[0].identifier;
+        }
     );
 
-  updateHUD();
 
-},1000);
+    joy.addEventListener(
+        "touchmove",
+        e=>{
 
+            for(
+                const t of e.changedTouches
+            ){
 
-/* ================= HUD ================= */
+                if(
+                    t.identifier !==
+                    joystickTouch
+                ) continue;
 
-function updateHUD(){
+                const rect =
+                    joy.getBoundingClientRect();
 
-  $("score").textContent =
-    score;
+                let dx =
+                    t.clientX -
+                    (rect.left+rect.width/2);
 
-  $("waveNumber").textContent =
-    wave;
+                let dy =
+                    t.clientY -
+                    (rect.top+rect.height/2);
 
-  $("xp").textContent =
-    player.xp;
+                const max=38;
 
-  $("healthText").textContent =
-    health + " / 100";
+                const distance =
+                    Math.sqrt(
+                        dx*dx+dy*dy
+                    );
 
-  $("energyText").textContent =
-    energy + " / 100";
+                if(distance>max){
 
-  $("healthFill").style.width =
-    health + "%";
+                    dx =
+                        dx/distance*max;
 
-  $("energyFill").style.width =
-    energy + "%";
+                    dy =
+                        dy/distance*max;
+                }
 
-}
+                stick.style.left =
+                    `calc(50% + ${dx}px)`;
 
+                stick.style.top =
+                    `calc(50% + ${dy}px)`;
 
-/* ================= POPUP ================= */
 
-function showPopup(text){
+                moveForward =
+                    dy < -10;
 
-  const p =
-    document.createElement("div");
+                moveBackward =
+                    dy > 10;
 
-  p.className = "popup";
+                moveLeft =
+                    dx < -10;
 
-  p.textContent = text;
-
-  $("arena").appendChild(p);
-
-  setTimeout(()=>{
-    p.remove();
-  },1000);
-
-}
-
-
-/* ================= VICTORY ================= */
-
-function winGame(){
-
-  if(!gameRunning) return;
-
-  gameRunning = false;
-
-  const data =
-    modes[selectedMode];
-
-  const bonus =
-    Math.floor(score/100);
-
-  const reward =
-    data.reward + bonus;
-
-  const earnedXP =
-    data.xp +
-    Math.floor(score/10);
-
-  player.credits += reward;
-
-  player.xp += earnedXP;
-
-  while(player.xp >= player.level*500){
-
-    player.xp -=
-      player.level*500;
-
-    player.level++;
-
-  }
-
-  savePlayer();
-
-  showResult(
-    true,
-    earnedXP,
-    reward
-  );
-
-}
-
-
-/* ================= DEFEAT ================= */
-
-function loseGame(){
-
-  if(!gameRunning) return;
-
-  gameRunning = false;
-
-  const earnedXP =
-    Math.floor(score/20);
-
-  const reward =
-    Math.floor(score/25);
-
-  player.xp += earnedXP;
-
-  player.credits += reward;
-
-  savePlayer();
-
-  showResult(
-    false,
-    earnedXP,
-    reward
-  );
-
-}
-
-
-/* ================= RESULT ================= */
-
-function showResult(
-  victory,
-  earnedXP,
-  reward
-){
-
-  $("result").style.display =
-    "flex";
-
-  $("resultTitle").textContent =
-    victory
-      ? "VICTORY"
-      : "DEFEAT";
-
-  $("resultSub").textContent =
-    victory
-      ? "Arena completed successfully."
-      : "The arena timer has ended.";
-
-  $("finalScore").textContent =
-    score;
-
-  $("finalXP").textContent =
-    "+" + earnedXP;
-
-  $("finalCredits").textContent =
-    "+" + reward;
-
-}
-
-
-/* ================= LEAVE ================= */
-
-$("leaveGame").onclick = ()=>{
-
-  if(
-    confirm(
-      "Leave the current arena?"
-    )
-  ){
-
-    gameRunning = false;
-
-    $("arena").style.display =
-      "none";
-
-    $("modeScreen").style.display =
-      "flex";
-
-    $("actors").innerHTML = "";
-
-    $("minimap")
-      .querySelectorAll(".mapDot")
-      .forEach(x=>x.remove());
-
-  }
-
-};
-
-
-/* ================= RESULT BUTTONS ================= */
-
-$("backLobby").onclick = ()=>{
-
-  location.href = "index.html";
-
-};
-
-
-$("playAgain").onclick = ()=>{
-
-  $("result").style.display =
-    "none";
-
-  launchArena();
-
-};
-
-
-/* ================= TOUCH JOYSTICK ================= */
-
-const joyArea =
-  $("joyArea");
-
-const joy =
-  $("joy");
-
-let joyActive = false;
-
-function moveJoy(x,y){
-
-  const rect =
-    joyArea.getBoundingClientRect();
-
-  const cx =
-    rect.left +
-    rect.width/2;
-
-  const cy =
-    rect.top +
-    rect.height/2;
-
-  let dx =
-    x-cx;
-
-  let dy =
-    y-cy;
-
-  const max =
-    rect.width*.28;
-
-  const distance =
-    Math.sqrt(dx*dx+dy*dy);
-
-  if(distance > max){
-
-    dx =
-      dx/distance*max;
-
-    dy =
-      dy/distance*max;
-
-  }
-
-  joy.style.left =
-    `calc(50% + ${dx}px)`;
-
-  joy.style.top =
-    `calc(50% + ${dy}px)`;
-
-}
-
-joyArea.addEventListener(
-  "pointerdown",
-  e=>{
-
-    joyActive=true;
-
-    joyArea.setPointerCapture(
-      e.pointerId
+                moveRight =
+                    dx > 10;
+            }
+        }
     );
 
-    moveJoy(
-      e.clientX,
-      e.clientY
+
+    joy.addEventListener(
+        "touchend",
+        ()=>{
+            joystickTouch=null;
+
+            stick.style.left="50%";
+            stick.style.top="50%";
+
+            moveForward=false;
+            moveBackward=false;
+            moveLeft=false;
+            moveRight=false;
+        }
     );
 
-  }
-);
 
-joyArea.addEventListener(
-  "pointermove",
-  e=>{
+    document.addEventListener(
+        "touchstart",
+        e=>{
 
-    if(!joyActive) return;
+            if(
+                e.target.closest("#joystick") ||
+                e.target.closest(".action") ||
+                e.target.id==="exit"
+            ) return;
 
-    moveJoy(
-      e.clientX,
-      e.clientY
+            const t=e.changedTouches[0];
+
+            touchLook={
+                id:t.identifier,
+                x:t.clientX,
+                y:t.clientY
+            };
+        }
     );
 
-  }
-);
 
-joyArea.addEventListener(
-  "pointerup",
-  ()=>{
+    document.addEventListener(
+        "touchmove",
+        e=>{
 
-    joyActive=false;
+            if(!touchLook) return;
 
-    joy.style.left="50%";
-    joy.style.top="50%";
+            for(
+                const t of e.changedTouches
+            ){
 
-  }
-);
+                if(
+                    t.identifier !==
+                    touchLook.id
+                ) continue;
 
+                const dx =
+                    t.clientX-touchLook.x;
 
-/* ================= KEYBOARD ================= */
-
-document.addEventListener(
-  "keydown",
-  e=>{
-
-    if(!gameRunning) return;
-
-    if(e.code === "Space"){
-      $("pulse").click();
-    }
-
-    if(e.code === "KeyQ"){
-      $("ability").click();
-    }
-
-    if(e.code === "ShiftLeft"){
-      $("dash").click();
-    }
-
-  }
-);
+                const dy =
+                    t.clientY-touchLook.y;
 
 
-/* ================= PREVENT ZOOM ================= */
+                yaw -= dx*.004;
+                pitch -= dy*.003;
 
-document.addEventListener(
-  "gesturestart",
-  e=>e.preventDefault()
-);
-
-document.addEventListener(
-  "dblclick",
-  e=>e.preventDefault()
-);
+                pitch =
+                    Math.max(
+                        -1.35,
+                        Math.min(1.35,pitch)
+                    );
 
 
-/* ================= INITIAL ================= */
+                touchLook.x=t.clientX;
+                touchLook.y=t.clientY;
+            }
+        }
+    );
 
-savePlayer();
 
-</script></body>
+    document.addEventListener(
+        "touchend",
+        e=>{
+
+            for(
+                const t of e.changedTouches
+            ){
+
+                if(
+                    touchLook &&
+                    t.identifier===
+                    touchLook.id
+                ){
+                    touchLook=null;
+                }
+            }
+        }
+    );
+
+
+    document.getElementById("exit")
+        .onclick=()=>{
+            location.href="index.html";
+        };
+
+
+    document.getElementById("ability")
+        .onclick=()=>{
+            flash("ENERGY PULSE");
+        };
+
+
+    document.getElementById("shield")
+        .onclick=()=>{
+            flash("SHIELD ACTIVE");
+        };
+
+
+    document.getElementById("scan")
+        .onclick=()=>{
+            flash("SCANNER ACTIVE");
+        };
+}
+
+
+/* =====================================
+   EFFECT
+===================================== */
+
+function flash(text){
+
+    const old =
+        document.getElementById("crosshair");
+
+    old.style.transform =
+        "translate(-50%,-50%) scale(1.8)";
+
+    setTimeout(()=>{
+        old.style.transform =
+            "translate(-50%,-50%) scale(1)";
+    },180);
+
+    console.log(text);
+}
+
+
+/* =====================================
+   UPDATE
+===================================== */
+
+function update(){
+
+    const delta =
+        Math.min(
+            clock.getDelta(),
+            .05
+        );
+
+    const speed =
+        75*delta;
+
+
+    if(moveForward)
+        velocity.z -= speed;
+
+    if(moveBackward)
+        velocity.z += speed;
+
+    if(moveLeft)
+        velocity.x -= speed;
+
+    if(moveRight)
+        velocity.x += speed;
+
+
+    velocity.multiplyScalar(.82);
+
+
+    const forward =
+        new THREE.Vector3(
+            Math.sin(yaw),
+            0,
+            Math.cos(yaw)
+        );
+
+    const right =
+        new THREE.Vector3(
+            Math.cos(yaw),
+            0,
+            -Math.sin(yaw)
+        );
+
+
+    camera.position.addScaledVector(
+        forward,
+        -velocity.z
+    );
+
+    camera.position.addScaledVector(
+        right,
+        velocity.x
+    );
+
+
+    /* BOUNDARIES */
+
+    camera.position.x =
+        THREE.MathUtils.clamp(
+            camera.position.x,
+            -worldSize/2+15,
+            worldSize/2-15
+        );
+
+    camera.position.z =
+        THREE.MathUtils.clamp(
+            camera.position.z,
+            -worldSize/2+15,
+            worldSize/2-15
+        );
+
+
+    camera.position.y=3.2;
+
+
+    camera.rotation.order="YXZ";
+
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
+}
+
+
+/* =====================================
+   RENDER
+===================================== */
+
+function animate(){
+
+    requestAnimationFrame(animate);
+
+    update();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+
+/* =====================================
+   RESIZE
+===================================== */
+
+function resize(){
+
+    camera.aspect =
+        innerWidth/innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        innerWidth,
+        innerHeight
+    );
+}
+
+
+/* =====================================
+   RUN
+===================================== */
+
+init();
+
+</script>
+
+</body>
 </html>
