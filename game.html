@@ -15,28 +15,47 @@
 
 html,body{
     width:100%;
-    height:100%;
+    min-height:100%;
 }
 
 body{
     font-family:Arial,sans-serif;
-    background:#070b10;
-    color:white;
-    overflow:hidden;
+    background:#080d13;
+    color:#ffffff;
+    overflow-x:hidden;
 }
 
 /* BACKGROUND */
 
-.game-bg{
+body::before{
+    content:"";
     position:fixed;
     inset:0;
+    z-index:-2;
     background:
-        radial-gradient(circle at 50% 20%, #12324a 0%, transparent 35%),
-        linear-gradient(135deg,#05070a,#0c141d);
-    z-index:-1;
+        radial-gradient(
+            circle at 50% 0%,
+            #16415a 0%,
+            #0b1721 35%,
+            #05080c 80%
+        );
 }
 
-/* TOP */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            rgba(255,255,255,.02) 1px,
+            transparent 1px
+        );
+    background-size:100% 4px;
+}
+
+/* TOP BAR */
 
 .top{
     height:65px;
@@ -44,18 +63,19 @@ body{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:10px 14px;
-    background:rgba(0,0,0,.75);
-    border-bottom:1px solid #263442;
+    padding:8px 12px;
+    background:#090f16;
+    border-bottom:1px solid #294050;
 }
 
 .back{
-    padding:10px 14px;
-    border:1px solid #34495a;
+    border:1px solid #3a5263;
     border-radius:10px;
-    background:#111a23;
+    padding:10px 12px;
+    background:#111d27;
     color:white;
     font-weight:bold;
+    font-size:12px;
 }
 
 .title{
@@ -69,62 +89,64 @@ body{
 }
 
 .title span{
+    display:block;
+    margin-top:3px;
+    color:#55d5ff;
     font-size:9px;
-    color:#55cfff;
+    letter-spacing:1px;
 }
-
-/* STATS */
 
 .stats{
     display:flex;
-    gap:6px;
+    gap:5px;
 }
 
 .stat{
-    background:#101820;
-    border:1px solid #263442;
+    background:#111d27;
+    border:1px solid #294050;
     border-radius:8px;
-    padding:7px 9px;
+    padding:7px 8px;
     font-size:11px;
 }
 
 /* MAIN */
 
 main{
-    height:calc(100vh - 65px);
-    overflow-y:auto;
-    padding:18px;
+    width:100%;
+    min-height:calc(100vh - 65px);
+    padding:18px 14px 40px;
 }
 
-/* MISSION */
+/* MISSION CARD */
 
 .mission{
+    width:100%;
     max-width:650px;
-    margin:auto;
-    background:#101820;
-    border:1px solid #263442;
+    margin:0 auto;
+    padding:20px;
+    background:#101a23;
+    border:1px solid #304858;
     border-radius:18px;
-    padding:22px;
-    box-shadow:0 10px 35px rgba(0,0,0,.5);
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
 }
 
 .label{
-    color:#55cfff;
-    font-size:11px;
-    letter-spacing:3px;
+    color:#55d5ff;
+    font-size:10px;
     font-weight:bold;
+    letter-spacing:3px;
 }
 
 h1{
-    margin-top:8px;
-    font-size:29px;
+    margin-top:9px;
+    font-size:27px;
 }
 
 .description{
-    color:#a6b3c1;
-    margin-top:8px;
-    line-height:1.6;
+    margin-top:9px;
+    color:#aebbc6;
     font-size:13px;
+    line-height:1.6;
 }
 
 /* PROGRESS */
@@ -134,20 +156,24 @@ h1{
     justify-content:space-between;
     margin-top:22px;
     margin-bottom:8px;
-    font-size:11px;
+    color:#b8c5ce;
+    font-size:10px;
+    font-weight:bold;
 }
 
 .progress{
+    width:100%;
     height:10px;
-    background:#05080c;
+    background:#05090d;
     border-radius:20px;
+    border:1px solid #263844;
     overflow:hidden;
 }
 
 .progress-bar{
-    height:100%;
     width:0%;
-    background:#18bfff;
+    height:100%;
+    background:#20c5ff;
     transition:.3s;
 }
 
@@ -155,34 +181,35 @@ h1{
 
 .objective{
     margin-top:18px;
-    padding:16px;
+    padding:15px;
+    background:#0a1118;
+    border:1px solid #2a3f4d;
     border-radius:13px;
-    background:#0b1117;
-    border:1px solid #263442;
 }
 
 .objective-title{
+    margin-bottom:10px;
+    font-size:12px;
     font-weight:bold;
-    font-size:13px;
-    margin-bottom:12px;
 }
 
 .target{
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    background:#121c25;
-    padding:13px;
-    border-radius:10px;
+    justify-content:space-between;
+    padding:12px;
+    background:#121e28;
+    border-radius:9px;
 }
 
 .target-name{
-    color:#b9c5d0;
+    color:#b9c6cf;
     font-size:12px;
 }
 
 .target-count{
-    color:#55cfff;
+    color:#55d5ff;
+    font-size:12px;
     font-weight:bold;
 }
 
@@ -196,64 +223,75 @@ h1{
 }
 
 button{
+    font-family:Arial,sans-serif;
     cursor:pointer;
 }
 
 .complete{
     border:0;
     border-radius:11px;
-    padding:14px;
-    background:#168cff;
+    padding:14px 8px;
+    background:#168fff;
     color:white;
     font-weight:bold;
+    font-size:12px;
 }
 
 .reset{
-    border:1px solid #34495a;
+    border:1px solid #3a5263;
     border-radius:11px;
-    padding:14px;
-    background:#111a23;
+    padding:14px 8px;
+    background:#111d27;
     color:white;
     font-weight:bold;
+    font-size:12px;
+}
+
+/* LEVEL TITLE */
+
+.level-title{
+    width:100%;
+    max-width:650px;
+    margin:25px auto 10px;
+    font-size:16px;
 }
 
 /* LEVELS */
 
-.level-title{
-    max-width:650px;
-    margin:22px auto 10px;
-    font-size:16px;
-}
-
 .levels{
+    width:100%;
     max-width:650px;
-    margin:auto;
+    margin:0 auto;
     display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:8px;
+    gap:7px;
 }
 
 .level{
-    padding:12px 4px;
+    min-height:65px;
+    padding:10px 3px;
     text-align:center;
-    background:#101820;
-    border:1px solid #263442;
+    background:#101a23;
+    border:1px solid #2c414e;
     border-radius:11px;
-    font-size:10px;
+    color:#b9c6cf;
+    font-size:9px;
 }
 
 .level b{
     display:block;
-    font-size:18px;
     margin-bottom:5px;
+    color:#ffffff;
+    font-size:17px;
 }
 
 .level.current{
-    border-color:#18bfff;
+    border-color:#20c5ff;
+    box-shadow:0 0 12px rgba(32,197,255,.15);
 }
 
 .level.locked{
-    opacity:.4;
+    opacity:.45;
 }
 
 /* TOAST */
@@ -261,35 +299,46 @@ button{
 #toast{
     position:fixed;
     left:50%;
-    bottom:25px;
+    bottom:22px;
     transform:translateX(-50%);
-    background:#111b24;
-    border:1px solid #34495a;
-    padding:11px 18px;
-    border-radius:10px;
-    font-size:12px;
     display:none;
+    z-index:100;
+    padding:11px 18px;
+    background:#111d27;
+    border:1px solid #3a5263;
+    border-radius:10px;
+    color:white;
+    font-size:12px;
+    white-space:nowrap;
 }
 
 /* MOBILE */
 
 @media(max-width:500px){
 
-    .stats .stat{
-        padding:6px;
-        font-size:10px;
-    }
-
     .title strong{
         font-size:11px;
     }
 
+    .title span{
+        font-size:8px;
+    }
+
+    .stats .stat{
+        padding:6px;
+        font-size:9px;
+    }
+
     .mission{
-        padding:18px;
+        padding:17px;
     }
 
     h1{
-        font-size:24px;
+        font-size:23px;
+    }
+
+    .description{
+        font-size:12px;
     }
 
     .levels{
@@ -301,8 +350,6 @@ button{
 </head>
 
 <body>
-
-<div class="game-bg"></div>
 
 <header class="top">
 
@@ -316,6 +363,7 @@ button{
     </div>
 
     <div class="stats">
+
         <div class="stat">
             🪙 <span id="credits">1000</span>
         </div>
@@ -323,6 +371,7 @@ button{
         <div class="stat">
             ⭐ <span id="xp">0</span>
         </div>
+
     </div>
 
 </header>
@@ -340,24 +389,31 @@ button{
         TRAINING PROTOCOL
     </h1>
 
-    <p class="description" id="description">
+    <p id="description" class="description">
         Complete the objective to advance to the next mission.
     </p>
 
 
     <div class="progress-info">
-        <span>MISSION PROGRESS</span>
+
+        <span>
+            MISSION PROGRESS
+        </span>
 
         <span id="progressText">
             0 / 5
         </span>
+
     </div>
 
+
     <div class="progress">
+
         <div
             id="progressBar"
             class="progress-bar">
         </div>
+
     </div>
 
 
@@ -391,17 +447,13 @@ button{
         <button
             class="complete"
             onclick="completeTask()">
-
             ✓ COMPLETE TASK
-
         </button>
 
         <button
             class="reset"
             onclick="resetMission()">
-
             ↻ RESET
-
         </button>
 
     </div>
@@ -477,65 +529,44 @@ const missions = [
 ];
 
 
-/* DATA */
+/* LOAD DATA */
 
 const defaultData = {
-
     playerName:"GHOST",
-
     level:1,
-
     sc:250,
-
     credits:1000,
-
     selectedMode:"Easy",
-
     unlockedLevel:1,
-
     missionProgress:0,
-
     xp:0
-
 };
 
-
-let data;
+let data = defaultData;
 
 try{
 
-    data =
-        JSON.parse(
-            localStorage.getItem("shadowStrike")
-        ) || defaultData;
+    const saved =
+        localStorage.getItem("shadowStrike");
 
-}catch(e){
+    if(saved){
 
-    data = defaultData;
+        const parsed =
+            JSON.parse(saved);
 
-}
+        data = {
+            ...defaultData,
+            ...parsed
+        };
 
+    }
 
-/* FIX OLD DATA */
+}catch(error){
 
-if(!data.level){
-    data.level = 1;
-}
+    data = {
+        ...defaultData
+    };
 
-if(!data.unlockedLevel){
-    data.unlockedLevel = 1;
-}
-
-if(typeof data.missionProgress !== "number"){
-    data.missionProgress = 0;
-}
-
-if(typeof data.xp !== "number"){
-    data.xp = 0;
-}
-
-if(typeof data.credits !== "number"){
-    data.credits = 1000;
 }
 
 
@@ -543,10 +574,18 @@ if(typeof data.credits !== "number"){
 
 function save(){
 
-    localStorage.setItem(
-        "shadowStrike",
-        JSON.stringify(data)
-    );
+    try{
+
+        localStorage.setItem(
+            "shadowStrike",
+            JSON.stringify(data)
+        );
+
+    }catch(error){
+
+        console.log(error);
+
+    }
 
 }
 
@@ -555,12 +594,18 @@ function save(){
 
 function currentMission(){
 
-    return missions[
-        Math.min(
-            data.level - 1,
-            missions.length - 1
-        )
-    ];
+    let index =
+        Number(data.level) - 1;
+
+    if(index < 0){
+        index = 0;
+    }
+
+    if(index >= missions.length){
+        index = missions.length - 1;
+    }
+
+    return missions[index];
 
 }
 
@@ -599,10 +644,11 @@ function render(){
 
 
     let progress =
-        Math.min(
-            data.missionProgress,
-            mission.goal
-        );
+        Number(data.missionProgress) || 0;
+
+    if(progress > mission.goal){
+        progress = mission.goal;
+    }
 
 
     document.getElementById(
@@ -610,17 +656,19 @@ function render(){
     ).textContent =
         progress + " / " + mission.goal;
 
-
     document.getElementById(
         "targetCount"
     ).textContent =
         progress + " / " + mission.goal;
 
 
+    const percentage =
+        (progress / mission.goal) * 100;
+
     document.getElementById(
         "progressBar"
     ).style.width =
-        ((progress / mission.goal) * 100) + "%";
+        percentage + "%";
 
 
     renderLevels();
@@ -639,7 +687,7 @@ function renderLevels(){
 
 
     missions.forEach(
-        (mission,index)=>{
+        function(mission,index){
 
             const number =
                 index + 1;
@@ -650,33 +698,27 @@ function renderLevels(){
             div.className = "level";
 
 
-            if(number === data.level){
-
+            if(number === Number(data.level)){
                 div.classList.add("current");
-
             }
 
-
-            if(number > data.unlockedLevel){
-
+            if(number > Number(data.unlockedLevel)){
                 div.classList.add("locked");
-
             }
 
 
-            div.innerHTML = `
+            const icon =
+                number <= Number(data.unlockedLevel)
+                ? "✓"
+                : "🔒";
 
-                <b>
-                    ${
-                        number <= data.unlockedLevel
-                        ? "✓"
-                        : "🔒"
-                    }
-                </b>
 
-                LEVEL ${number}
-
-            `;
+            div.innerHTML =
+                "<b>" +
+                icon +
+                "</b>" +
+                "LEVEL " +
+                number;
 
 
             box.appendChild(div);
@@ -687,7 +729,7 @@ function renderLevels(){
 }
 
 
-/* TASK */
+/* COMPLETE TASK */
 
 function completeTask(){
 
@@ -696,20 +738,15 @@ function completeTask(){
 
 
     if(
-        data.missionProgress >=
-        mission.goal
+        Number(data.missionProgress)
+        >= mission.goal
     ){
-
         return;
-
     }
 
 
-    data.missionProgress++;
-
-    save();
-
-    render();
+    data.missionProgress =
+        Number(data.missionProgress) + 1;
 
 
     if(
@@ -718,13 +755,23 @@ function completeTask(){
     ){
 
         finishMission();
+        return;
 
     }
+
+
+    save();
+
+    render();
+
+    showToast(
+        "TASK COMPLETED"
+    );
 
 }
 
 
-/* FINISH */
+/* FINISH MISSION */
 
 function finishMission(){
 
@@ -732,24 +779,27 @@ function finishMission(){
         currentMission();
 
 
-    data.credits +=
+    data.credits =
+        Number(data.credits) +
         mission.credits;
 
-    data.xp +=
+    data.xp =
+        Number(data.xp) +
         mission.xp;
 
 
     if(
-        data.level <
+        Number(data.level) <
         missions.length
     ){
 
-        data.level++;
+        data.level =
+            Number(data.level) + 1;
 
         data.unlockedLevel =
             Math.max(
-                data.unlockedLevel,
-                data.level
+                Number(data.unlockedLevel),
+                Number(data.level)
             );
 
         data.missionProgress = 0;
@@ -781,7 +831,7 @@ function resetMission(){
     render();
 
     showToast(
-        "Mission reset"
+        "MISSION RESET"
     );
 
 }
@@ -811,12 +861,15 @@ function showToast(message){
         "block";
 
 
-    setTimeout(()=>{
+    setTimeout(
+        function(){
 
-        toast.style.display =
-            "none";
+            toast.style.display =
+                "none";
 
-    },1800);
+        },
+        1600
+    );
 
 }
 
