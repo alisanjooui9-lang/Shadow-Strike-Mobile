@@ -2,584 +2,2017 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
 <title>Shadow Strike</title>
 
 <style>
 *{
+    box-sizing:border-box;
     margin:0;
     padding:0;
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
 }
 
-body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:#05070b;
-    color:white;
-    min-height:100vh;
+html,body{
+    width:100%;
+    height:100%;
     overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#05080c;
+    color:white;
 }
 
-.background{
-    position:fixed;
-    inset:0;
+button{
+    font-family:Arial,sans-serif;
+    cursor:pointer;
+}
+
+/* BACKGROUND */
+
+.lobby{
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+
     background:
-        radial-gradient(circle at 75% 25%,rgba(0,170,255,.20),transparent 25%),
-        radial-gradient(circle at 20% 80%,rgba(130,0,255,.18),transparent 30%),
-        linear-gradient(135deg,#05070b,#0b1019 50%,#030407);
-    z-index:-3;
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(20,85,115,.55),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #05080c,
+            #101b25 50%,
+            #030508
+        );
 }
 
-.background::before{
+/* MOVING LIGHT */
+
+.lobby::before{
     content:"";
     position:absolute;
-    inset:0;
-    background:
-        linear-gradient(115deg,transparent 40%,rgba(255,255,255,.025) 41%,transparent 42%),
-        linear-gradient(65deg,transparent 55%,rgba(0,180,255,.035) 56%,transparent 57%);
-    background-size:180px 180px;
-    animation:bgMove 12s linear infinite;
+    width:70vw;
+    height:70vw;
+    left:35%;
+    top:5%;
+    border-radius:50%;
+    background:rgba(0,170,255,.08);
+    filter:blur(60px);
+    animation:moveLight 7s infinite alternate;
 }
 
-@keyframes bgMove{
-    from{transform:translate(0,0)}
-    to{transform:translate(180px,180px)}
+@keyframes moveLight{
+    from{
+        transform:translate(-40px,-20px);
+    }
+    to{
+        transform:translate(50px,30px);
+    }
 }
 
-.topbar{
-    height:70px;
+/* TOP BAR */
+
+.top{
+    position:absolute;
+    z-index:20;
+    top:0;
+    left:0;
+    width:100%;
+    height:65px;
+
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:10px 16px;
-    background:rgba(5,8,13,.82);
-    border-bottom:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(14px);
+
+    padding:8px 14px;
+
+    background:linear-gradient(
+        rgba(0,0,0,.8),
+        rgba(0,0,0,.25)
+    );
 }
 
-.player{
+/* PROFILE */
+
+.profile{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:9px;
 }
 
 .avatar{
-    width:46px;
-    height:46px;
-    border-radius:50%;
-    border:2px solid #36c8ff;
-    background:
-        radial-gradient(circle,#33465c,#10151e 65%);
+    width:42px;
+    height:42px;
+    border-radius:8px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:20px;
-    box-shadow:0 0 15px rgba(0,190,255,.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            #1d3545,
+            #081016
+        );
+
+    border:1px solid #4bbfe9;
+
+    font-size:21px;
 }
 
-.player-info b{
-    display:block;
-    font-size:14px;
+.player{
+    min-width:110px;
 }
 
-.level{
-    font-size:11px;
-    color:#7e8b9d;
-    margin-top:3px;
+.player-name{
+    font-size:13px;
+    font-weight:bold;
+    letter-spacing:1px;
 }
 
-.currencies{
+.rank{
+    margin-top:4px;
+    color:#58d4ff;
+    font-size:9px;
+}
+
+/* CURRENCY */
+
+.currency{
     display:flex;
     gap:7px;
 }
 
-.currency{
+.money{
     min-width:75px;
-    padding:7px 9px;
-    border-radius:10px;
-    background:rgba(255,255,255,.055);
-    border:1px solid rgba(255,255,255,.08);
-    text-align:center;
-    font-size:12px;
-}
+    padding:8px 10px;
 
-.currency span{
-    font-weight:bold;
-    margin-left:3px;
-}
+    border:1px solid #2d4655;
+    border-radius:8px;
 
-.sc{
-    color:#65d8ff;
-}
+    background:rgba(7,15,22,.85);
 
-.credits{
-    color:#ffd45c;
-}
-
-.main{
-    height:calc(100vh - 125px);
-    overflow-y:auto;
-    padding:18px 15px 25px;
-}
-
-.hero{
-    min-height:225px;
-    border-radius:22px;
-    position:relative;
-    overflow:hidden;
-    background:
-        linear-gradient(90deg,rgba(0,0,0,.92),rgba(0,0,0,.3)),
-        linear-gradient(135deg,#152536,#070a0e);
-    border:1px solid rgba(255,255,255,.1);
-    box-shadow:0 15px 45px rgba(0,0,0,.5);
-}
-
-.hero::after{
-    content:"";
-    position:absolute;
-    right:-50px;
-    top:-70px;
-    width:300px;
-    height:300px;
-    border-radius:50%;
-    background:radial-gradient(circle,rgba(0,180,255,.25),transparent 65%);
-}
-
-.hero-content{
-    position:relative;
-    z-index:2;
-    padding:28px 22px;
-}
-
-.small-title{
-    color:#55cfff;
     font-size:11px;
-    letter-spacing:3px;
-    font-weight:bold;
 }
 
-.hero h1{
-    font-size:38px;
-    letter-spacing:2px;
-    margin:8px 0;
-    text-shadow:0 4px 20px rgba(0,0,0,.8);
-}
+/* TOP BUTTONS */
 
-.hero p{
-    color:#aeb9c7;
-    font-size:13px;
-    max-width:270px;
-    line-height:1.6;
-}
-
-.play-btn{
-    margin-top:20px;
-    border:0;
-    padding:13px 28px;
-    border-radius:10px;
-    background:linear-gradient(135deg,#19bfff,#176dff);
-    color:white;
-    font-size:14px;
-    font-weight:bold;
-    box-shadow:0 8px 25px rgba(0,150,255,.3);
-    cursor:pointer;
-}
-
-.play-btn:active{
-    transform:scale(.96);
-}
-
-.section-title{
+.top-actions{
     display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:20px 2px 10px;
+    gap:6px;
 }
 
-.section-title h2{
+.icon-btn{
+    width:38px;
+    height:38px;
+
+    border:1px solid #344b59;
+    border-radius:8px;
+
+    background:#0c151d;
+    color:white;
+
     font-size:16px;
 }
 
-.section-title span{
-    color:#657386;
-    font-size:11px;
+/* EVENT */
+
+.event{
+    position:absolute;
+    z-index:10;
+
+    top:78px;
+    left:16px;
+
+    width:250px;
+    padding:13px;
+
+    border:1px solid #35677c;
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(12,38,52,.95),
+            rgba(5,11,16,.92)
+        );
+
+    box-shadow:0 8px 25px rgba(0,0,0,.35);
 }
 
-.modes{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
+.event-small{
+    color:#55d5ff;
+    font-size:9px;
+    letter-spacing:2px;
 }
 
-.mode{
-    min-height:92px;
-    padding:14px;
-    border-radius:15px;
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.045);
+.event h2{
+    margin-top:5px;
+    font-size:17px;
+}
+
+.event p{
+    margin-top:4px;
+    color:#9fb0bc;
+    font-size:10px;
+}
+
+.event button{
+    margin-top:9px;
+    padding:7px 12px;
+
+    border:0;
+    border-radius:6px;
+
+    background:#168fff;
+    color:white;
+
+    font-size:10px;
+    font-weight:bold;
+}
+
+/* OPERATOR */
+
+.operator{
+    position:absolute;
+    z-index:2;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-45%);
+
+    width:260px;
+    height:390px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+}
+
+.operator-glow{
+    position:absolute;
+
+    width:220px;
+    height:220px;
+
+    border-radius:50%;
+
+    background:rgba(35,190,255,.13);
+    filter:blur(25px);
+}
+
+.operator-body{
     position:relative;
-    overflow:hidden;
-    cursor:pointer;
+    z-index:2;
+
+    width:150px;
+    height:285px;
+
+    border-radius:65px 65px 25px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #273b47,
+            #0b1218 55%,
+            #182b36
+        );
+
+    border:1px solid #486574;
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.8),
+        inset 0 0 30px rgba(100,200,255,.08);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:62px;
+}
+
+.operator-label{
+    position:absolute;
+    bottom:0;
+    width:100%;
+
+    text-align:center;
+}
+
+.operator-label strong{
+    display:block;
+    font-size:17px;
+    letter-spacing:2px;
+}
+
+.operator-label span{
+    display:block;
+    margin-top:5px;
+    color:#55d5ff;
+    font-size:9px;
+}
+
+/* SIDE MENU */
+
+.side{
+    position:absolute;
+    z-index:15;
+
+    right:14px;
+    top:90px;
+
+    width:125px;
+
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.menu-btn{
+    position:relative;
+
+    padding:11px 10px;
+
+    border:1px solid #314957;
+    border-radius:9px;
+
+    background:rgba(8,16,23,.9);
+
+    color:white;
+
+    text-align:left;
+
+    font-size:10px;
+    font-weight:bold;
+
     transition:.2s;
 }
 
-.mode:active{
-    transform:scale(.97);
+.menu-btn:hover{
+    border-color:#55d5ff;
+    transform:translateX(-3px);
 }
 
-.mode::after{
-    content:"";
+.badge{
     position:absolute;
-    width:90px;
-    height:90px;
-    right:-30px;
-    bottom:-35px;
+    right:6px;
+    top:5px;
+
+    min-width:16px;
+    height:16px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
     border-radius:50%;
-    background:rgba(0,180,255,.08);
+
+    background:#168fff;
+    color:white;
+
+    font-size:8px;
 }
 
-.mode b{
-    display:block;
-    font-size:15px;
-    margin-bottom:7px;
+/* START */
+
+.start-area{
+    position:absolute;
+    z-index:12;
+
+    bottom:22px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:330px;
+
+    text-align:center;
 }
 
-.mode small{
-    color:#778496;
+.mode{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-bottom:8px;
 }
 
-.easy b{color:#65e68c}
-.medium b{color:#ffe06b}
-.hard b{color:#ff8a65}
-.nightmare b{color:#ff4d67}
+.mode button{
+    padding:6px 11px;
 
-.quick{
+    border:1px solid #344b59;
+    border-radius:6px;
+
+    background:#0b141c;
+    color:#9fb0bc;
+
+    font-size:9px;
+}
+
+.mode button.active{
+    background:#168fff;
+    color:white;
+    border-color:#55d5ff;
+}
+
+.start{
+    width:100%;
+
+    padding:15px;
+
+    border:1px solid #69dcff;
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #0c6fc1,
+            #159dff,
+            #0c6fc1
+        );
+
+    color:white;
+
+    font-size:17px;
+    font-weight:bold;
+    letter-spacing:3px;
+
+    box-shadow:
+        0 0 25px rgba(20,160,255,.3);
+}
+
+/* BOTTOM */
+
+.bottom{
+    position:absolute;
+    z-index:20;
+
+    left:0;
+    bottom:0;
+
+    width:100%;
+    height:48px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+
+    background:rgba(0,0,0,.72);
+    border-top:1px solid #243642;
+}
+
+.bottom button{
+    min-width:85px;
+
+    padding:7px 10px;
+
+    border:0;
+    background:transparent;
+
+    color:#9eabb5;
+
+    font-size:9px;
+    font-weight:bold;
+}
+
+.bottom button.active{
+    color:#55d5ff;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    z-index:100;
+
+    inset:0;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,.78);
+}
+
+.modal-box{
+    width:min(430px,90%);
+    max-height:82vh;
+
+    overflow:auto;
+
+    padding:20px;
+
+    background:#101b24;
+
+    border:1px solid #3b5968;
+    border-radius:15px;
+
+    box-shadow:0 20px 70px rgba(0,0,0,.7);
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:16px;
+}
+
+.modal-header h2{
+    font-size:19px;
+}
+
+.close{
+    width:30px;
+    height:30px;
+
+    border:1px solid #405461;
+    border-radius:7px;
+
+    background:#0b131a;
+    color:white;
+}
+
+/* CARDS */
+
+.cards{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(2,1fr);
     gap:9px;
 }
 
-.quick-btn{
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.045);
-    color:white;
-    border-radius:14px;
-    padding:14px 5px;
-    font-size:11px;
-    cursor:pointer;
-}
+.card{
+    padding:13px;
 
-.quick-btn div{
-    font-size:21px;
-    margin-bottom:7px;
-}
-
-.bottom{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:55px;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    background:rgba(5,8,13,.94);
-    border-top:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(15px);
-}
-
-.nav{
-    border:0;
-    background:none;
-    color:#647183;
-    font-size:10px;
-    cursor:pointer;
-}
-
-.nav div{
-    font-size:19px;
-    margin-bottom:2px;
-}
-
-.nav.active{
-    color:#45caff;
-}
-
-.toast{
-    position:fixed;
-    left:50%;
-    bottom:75px;
-    transform:translateX(-50%) translateY(20px);
-    padding:11px 18px;
+    border:1px solid #2d4553;
     border-radius:10px;
-    background:#111923;
-    border:1px solid rgba(255,255,255,.1);
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
+
+    background:#0b141b;
+}
+
+.card-icon{
+    font-size:25px;
+}
+
+.card h3{
+    margin-top:7px;
     font-size:12px;
-    white-space:nowrap;
 }
 
-.toast.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
+.card p{
+    margin-top:5px;
+    color:#93a4ae;
+    font-size:9px;
+    line-height:1.5;
 }
 
-@media(min-width:700px){
-    .main{
-        max-width:850px;
-        margin:auto;
+.card button{
+    margin-top:9px;
+
+    width:100%;
+
+    padding:8px;
+
+    border:0;
+    border-radius:6px;
+
+    background:#168fff;
+    color:white;
+
+    font-size:9px;
+    font-weight:bold;
+}
+
+/* PROFILE */
+
+.profile-big{
+    text-align:center;
+}
+
+.profile-avatar{
+    width:80px;
+    height:80px;
+
+    margin:auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:#162a36;
+    border:1px solid #55d5ff;
+
+    font-size:40px;
+}
+
+.profile-big h2{
+    margin-top:10px;
+}
+
+.profile-big p{
+    margin-top:4px;
+    color:#55d5ff;
+    font-size:10px;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+
+    margin-top:18px;
+}
+
+.stat-box{
+    padding:12px 5px;
+
+    text-align:center;
+
+    background:#0b141b;
+    border:1px solid #293f4b;
+    border-radius:8px;
+}
+
+.stat-box b{
+    display:block;
+    font-size:17px;
+}
+
+.stat-box span{
+    display:block;
+    margin-top:4px;
+    color:#8fa1ab;
+    font-size:8px;
+}
+
+/* CHALLENGES */
+
+.challenge{
+    padding:12px;
+    margin-bottom:8px;
+
+    border:1px solid #2c4451;
+    border-radius:9px;
+
+    background:#0b141b;
+}
+
+.challenge-top{
+    display:flex;
+    justify-content:space-between;
+
+    font-size:10px;
+}
+
+.challenge-bar{
+    height:6px;
+    margin-top:9px;
+
+    background:#05080c;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.challenge-fill{
+    height:100%;
+    background:#20c5ff;
+}
+
+.claim{
+    margin-top:8px;
+    padding:6px 10px;
+
+    border:0;
+    border-radius:5px;
+
+    background:#168fff;
+    color:white;
+
+    font-size:8px;
+}
+
+/* SPIN */
+
+.wheel{
+    width:190px;
+    height:190px;
+
+    margin:10px auto 18px;
+
+    border-radius:50%;
+
+    border:7px solid #315363;
+
+    background:
+        conic-gradient(
+            #168fff 0 45deg,
+            #182a35 45deg 90deg,
+            #20c5ff 90deg 135deg,
+            #182a35 135deg 180deg,
+            #168fff 180deg 225deg,
+            #182a35 225deg 270deg,
+            #20c5ff 270deg 315deg,
+            #182a35 315deg 360deg
+        );
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:transform 2s cubic-bezier(.2,.8,.2,1);
+}
+
+.wheel-center{
+    width:55px;
+    height:55px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:#081017;
+    border:2px solid #55d5ff;
+
+    font-size:11px;
+    font-weight:bold;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+    .event{
+        width:190px;
     }
+
+    .side{
+        width:105px;
+        right:7px;
+    }
+
+    .menu-btn{
+        padding:9px 7px;
+        font-size:8px;
+    }
+
+    .operator{
+        transform:translate(-50%,-43%) scale(.78);
+    }
+
+    .start-area{
+        width:250px;
+    }
+
+}
+
+@media(orientation:portrait){
+
+    .lobby::after{
+        content:"ROTATE YOUR DEVICE";
+        position:absolute;
+        z-index:999;
+
+        inset:0;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        background:#05080c;
+
+        color:#55d5ff;
+
+        font-size:18px;
+        font-weight:bold;
+        letter-spacing:2px;
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div class="background"></div>
+<div class="lobby">
 
-<header class="topbar">
+    <!-- TOP -->
 
-    <div class="player">
-        <div class="avatar">👤</div>
+    <header class="top">
 
-        <div class="player-info">
-            <b id="playerName">GHOST</b>
-            <div class="level">
-                LEVEL <span id="level">1</span>
-            </div>
-        </div>
-    </div>
+        <div class="profile">
 
-    <div class="currencies">
-
-        <div class="currency">
-            💎 <span class="sc" id="sc">250</span>
-        </div>
-
-        <div class="currency">
-            🪙 <span class="credits" id="credits">1000</span>
-        </div>
-
-    </div>
-
-</header>
-
-<main class="main">
-
-    <section class="hero">
-
-        <div class="hero-content">
-
-            <div class="small-title">
-                SHADOW STRIKE
+            <div class="avatar">
+                👤
             </div>
 
-            <h1>
-                MISSION<br>
-                PROTOCOL
-            </h1>
+            <div class="player">
 
-            <p>
-                Enter the battlefield. Complete missions,
-                unlock new abilities and become the ultimate operator.
-            </p>
+                <div
+                    class="player-name"
+                    id="playerName">
+                    GHOST
+                </div>
 
-            <button class="play-btn" onclick="startGame()">
-                ▶ START MISSION
+                <div
+                    class="rank"
+                    id="playerRank">
+                    LEVEL 1 • ROOKIE
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="currency">
+
+            <div class="money">
+                🪙 <span id="credits">1000</span>
+            </div>
+
+            <div class="money">
+                💎 <span id="sc">250</span>
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <button
+                class="icon-btn"
+                onclick="openModal('profileModal')">
+                👤
+            </button>
+
+            <button
+                class="icon-btn"
+                onclick="openModal('notificationsModal')">
+                🔔
+            </button>
+
+            <button
+                class="icon-btn"
+                onclick="openModal('settingsModal')">
+                ⚙️
             </button>
 
         </div>
 
+    </header>
+
+
+    <!-- EVENT -->
+
+    <section class="event">
+
+        <div class="event-small">
+            SEASON EVENT
+        </div>
+
+        <h2>
+            SHADOW RISING
+        </h2>
+
+        <p>
+            New missions, rewards and operator challenges.
+        </p>
+
+        <button onclick="openModal('eventModal')">
+            VIEW EVENT
+        </button>
+
     </section>
 
-    <div class="section-title">
-        <h2>DIFFICULTY</h2>
-        <span>SELECT MODE</span>
+
+    <!-- OPERATOR -->
+
+    <section class="operator">
+
+        <div class="operator-glow"></div>
+
+        <div class="operator-body">
+            🥷
+        </div>
+
+        <div class="operator-label">
+
+            <strong>
+                SHADOW OPERATIVE
+            </strong>
+
+            <span>
+                ACTIVE OPERATOR
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- SIDE MENU -->
+
+    <aside class="side">
+
+        <button
+            class="menu-btn"
+            onclick="openModal('shopModal')">
+            🛒 SHOP
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openModal('challengeModal')">
+
+            🎯 DAILY CHALLENGES
+
+            <span class="badge">
+                3
+            </span>
+
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openModal('spinModal')">
+            🎡 LUCKY SPIN
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openModal('battleModal')">
+            🎟️ BATTLE PASS
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openModal('eventModal')">
+            📢 EVENTS
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openModal('friendsModal')">
+            👥 FRIENDS
+        </button>
+
+    </aside>
+
+
+    <!-- START -->
+
+    <section class="start-area">
+
+        <div class="mode">
+
+            <button
+                class="active"
+                onclick="selectMode(this,'Easy')">
+                EASY
+            </button>
+
+            <button
+                onclick="selectMode(this,'Medium')">
+                MEDIUM
+            </button>
+
+            <button
+                onclick="selectMode(this,'Hard')">
+                HARD
+            </button>
+
+            <button
+                onclick="selectMode(this,'Nightmare')">
+                NIGHTMARE
+            </button>
+
+        </div>
+
+
+        <button
+            class="start"
+            onclick="startGame()">
+
+            ▶ START MATCH
+
+        </button>
+
+    </section>
+
+
+    <!-- BOTTOM -->
+
+    <nav class="bottom">
+
+        <button class="active">
+            🏠 HOME
+        </button>
+
+        <button onclick="openModal('loadoutModal')">
+            🔫 LOADOUT
+        </button>
+
+        <button onclick="openModal('challengeModal')">
+            🎯 MISSIONS
+        </button>
+
+        <button onclick="openModal('shopModal')">
+            🛒 SHOP
+        </button>
+
+        <button onclick="openModal('profileModal')">
+            👤 PROFILE
+        </button>
+
+    </nav>
+
+</div>
+
+
+<!-- PROFILE MODAL -->
+
+<div
+    class="modal"
+    id="profileModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                PLAYER PROFILE
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('profileModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="profile-big">
+
+            <div class="profile-avatar">
+                👤
+            </div>
+
+            <h2 id="profileName">
+                GHOST
+            </h2>
+
+            <p>
+                SHADOW OPERATIVE
+            </p>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-box">
+                <b id="profileLevel">1</b>
+                <span>LEVEL</span>
+            </div>
+
+            <div class="stat-box">
+                <b id="profileXP">0</b>
+                <span>XP</span>
+            </div>
+
+            <div class="stat-box">
+                <b id="profileCredits">1000</b>
+                <span>CREDITS</span>
+            </div>
+
+        </div>
+
     </div>
 
-    <section class="modes">
+</div>
 
-        <div class="mode easy" onclick="selectMode('Easy')">
-            <b>🟢 EASY</b>
-            <small>Training Operation</small>
+
+<!-- SHOP -->
+
+<div
+    class="modal"
+    id="shopModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🛒 SHADOW SHOP
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('shopModal')">
+                ×
+            </button>
+
         </div>
 
-        <div class="mode medium" onclick="selectMode('Medium')">
-            <b>🟡 MEDIUM</b>
-            <small>Combat Operation</small>
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>RARE SKIN</h3>
+                <p>Operator cosmetic.</p>
+                <button onclick="buyItem(150)">
+                    🪙 150
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⭐</div>
+                <h3>XP BOOST</h3>
+                <p>Training reward.</p>
+                <button onclick="buyItem(200)">
+                    🪙 200
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💎</div>
+                <h3>SC PACK</h3>
+                <p>Premium currency.</p>
+                <button onclick="buySC()">
+                    🪙 500
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎁</div>
+                <h3>SUPPLY CASE</h3>
+                <p>Random cosmetic reward.</p>
+                <button onclick="buyItem(300)">
+                    🪙 300
+                </button>
+            </div>
+
         </div>
 
-        <div class="mode hard" onclick="selectMode('Hard')">
-            <b>🔴 HARD</b>
-            <small>Elite Operation</small>
-        </div>
-
-        <div class="mode nightmare" onclick="selectMode('Nightmare')">
-            <b>☠ NIGHTMARE</b>
-            <small>Extreme Operation</small>
-        </div>
-
-    </section>
-
-    <div class="section-title">
-        <h2>COMMAND CENTER</h2>
     </div>
 
-    <section class="quick">
+</div>
 
-        <button class="quick-btn" onclick="openPage('weapons')">
-            <div>🎯</div>
-            TRAINING
+
+<!-- CHALLENGES -->
+
+<div
+    class="modal"
+    id="challengeModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🎯 DAILY CHALLENGES
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('challengeModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="challenge">
+
+            <div class="challenge-top">
+                <span>
+                    COMPLETE MISSIONS
+                </span>
+
+                <span>
+                    2 / 3
+                </span>
+            </div>
+
+            <div class="challenge-bar">
+                <div
+                    class="challenge-fill"
+                    style="width:66%">
+                </div>
+            </div>
+
+            <button
+                class="claim"
+                onclick="claimReward(100)">
+                CLAIM 100 XP
+            </button>
+
+        </div>
+
+
+        <div class="challenge">
+
+            <div class="challenge-top">
+                <span>
+                    EARN CREDITS
+                </span>
+
+                <span>
+                    350 / 500
+                </span>
+            </div>
+
+            <div class="challenge-bar">
+                <div
+                    class="challenge-fill"
+                    style="width:70%">
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="challenge">
+
+            <div class="challenge-top">
+                <span>
+                    PLAY 5 MATCHES
+                </span>
+
+                <span>
+                    1 / 5
+                </span>
+            </div>
+
+            <div class="challenge-bar">
+                <div
+                    class="challenge-fill"
+                    style="width:20%">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SPIN -->
+
+<div
+    class="modal"
+    id="spinModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🎡 LUCKY SPIN
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('spinModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            id="wheel"
+            class="wheel">
+
+            <div class="wheel-center">
+                SPIN
+            </div>
+
+        </div>
+
+
+        <button
+            class="start"
+            onclick="spinWheel()">
+
+            SPIN NOW
+
         </button>
 
-        <button class="quick-btn" onclick="openPage('store')">
-            <div>🛒</div>
-            STORE
-        </button>
+    </div>
 
-        <button class="quick-btn" onclick="openPage('profile')">
-            <div>👤</div>
-            PROFILE
-        </button>
+</div>
 
-    </section>
 
-</main>
+<!-- EVENT -->
 
-<nav class="bottom">
+<div
+    class="modal"
+    id="eventModal">
 
-    <button class="nav active">
-        <div>⌂</div>
-        HOME
-    </button>
+    <div class="modal-box">
 
-    <button class="nav" onclick="openPage('missions')">
-        <div>🎯</div>
-        MISSIONS
-    </button>
+        <div class="modal-header">
 
-    <button class="nav" onclick="openPage('training')">
-        <div>★</div>
-        TRAINING
-    </button>
+            <h2>
+                📢 SHADOW RISING
+            </h2>
 
-    <button class="nav" onclick="openPage('store')">
-        <div>🛒</div>
-        STORE
-    </button>
+            <button
+                class="close"
+                onclick="closeModal('eventModal')">
+                ×
+            </button>
 
-    <button class="nav" onclick="openPage('profile')">
-        <div>👤</div>
-        ACCOUNT
-    </button>
+        </div>
 
-</nav>
 
-<div class="toast" id="toast"></div>
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🎯</div>
+                <h3>EVENT MISSIONS</h3>
+                <p>Complete special operations.</p>
+                <button onclick="showMessage('Event missions opened')">
+                    OPEN
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎁</div>
+                <h3>EVENT REWARD</h3>
+                <p>Unlock exclusive rewards.</p>
+                <button onclick="claimReward(150)">
+                    CLAIM
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- BATTLE PASS -->
+
+<div
+    class="modal"
+    id="battleModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🎟️ BATTLE PASS
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('battleModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="challenge">
+
+            <div class="challenge-top">
+                <span>
+                    SEASON PROGRESS
+                </span>
+
+                <span>
+                    12 / 50
+                </span>
+            </div>
+
+            <div class="challenge-bar">
+
+                <div
+                    class="challenge-fill"
+                    style="width:24%">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🎁</div>
+                <h3>TIER 1</h3>
+                <p>100 Credits</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💎</div>
+                <h3>TIER 5</h3>
+                <p>50 SC</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FRIENDS -->
+
+<div
+    class="modal"
+    id="friendsModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                👥 FRIENDS
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('friendsModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🟢</div>
+                <h3>SHADOW_01</h3>
+                <p>Online • Level 7</p>
+                <button onclick="showMessage('Invite sent')">
+                    INVITE
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🟢</div>
+                <h3>GHOST_X</h3>
+                <p>Online • Level 12</p>
+                <button onclick="showMessage('Invite sent')">
+                    INVITE
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- LOADOUT -->
+
+<div
+    class="modal"
+    id="loadoutModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🔫 LOADOUT
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('loadoutModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🔫</div>
+                <h3>PRIMARY</h3>
+                <p>Shadow Rifle</p>
+                <button onclick="showMessage('Primary selected')">
+                    SELECT
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔫</div>
+                <h3>SECONDARY</h3>
+                <p>Shadow Sidearm</p>
+                <button onclick="showMessage('Secondary selected')">
+                    SELECT
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3>TACTICAL</h3>
+                <p>Shield Module</p>
+                <button onclick="showMessage('Tactical selected')">
+                    SELECT
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎖️</div>
+                <h3>OPERATOR</h3>
+                <p>Shadow Operative</p>
+                <button onclick="showMessage('Operator selected')">
+                    SELECT
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- NOTIFICATIONS -->
+
+<div
+    class="modal"
+    id="notificationsModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                🔔 NOTIFICATIONS
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('notificationsModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="challenge">
+            🎁 New daily reward available.
+        </div>
+
+        <div class="challenge">
+            📢 Shadow Rising event is active.
+        </div>
+
+        <div class="challenge">
+            🎯 New daily challenges available.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div
+    class="modal"
+    id="settingsModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                ⚙️ SETTINGS
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal('settingsModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-icon">🔊</div>
+                <h3>SOUND</h3>
+                <p>Game sound enabled.</p>
+                <button onclick="showMessage('Sound setting changed')">
+                    CHANGE
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎮</div>
+                <h3>CONTROLS</h3>
+                <p>Customize controls.</p>
+                <button onclick="showMessage('Controls opened')">
+                    OPEN
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <script>
 
+/* PLAYER DATA */
+
 const defaultData = {
+
     playerName:"GHOST",
+
     level:1,
-    sc:250,
+
+    xp:0,
+
     credits:1000,
+
+    sc:250,
+
     selectedMode:"Easy",
+
     unlockedLevel:1
+
 };
+
 
 let data;
 
+
 try{
-    data = JSON.parse(
-        localStorage.getItem("shadowStrike")
-    ) || defaultData;
+
+    data =
+        JSON.parse(
+            localStorage.getItem("shadowStrike")
+        ) || defaultData;
+
 }catch(error){
-    data = defaultData;
+
+    data = {...defaultData};
+
 }
 
-function loadData(){
 
-    document.getElementById("playerName").textContent =
-        data.playerName;
+/* MERGE OLD DATA */
 
-    document.getElementById("level").textContent =
-        data.level;
+data = {
+    ...defaultData,
+    ...data
+};
 
-    document.getElementById("sc").textContent =
-        data.sc;
 
-    document.getElementById("credits").textContent =
-        data.credits;
-}
+/* SAVE */
 
-loadData();
-
-function saveData(){
+function save(){
 
     localStorage.setItem(
         "shadowStrike",
         JSON.stringify(data)
     );
+
 }
 
-function selectMode(mode){
 
-    data.selectedMode = mode;
+/* UPDATE UI */
 
-    saveData();
+function updateUI(){
 
-    showToast(
-        mode + " mode selected"
+    document.getElementById(
+        "playerName"
+    ).textContent =
+        data.playerName;
+
+    document.getElementById(
+        "playerRank"
+    ).textContent =
+        "LEVEL " +
+        data.level +
+        " • " +
+        getRank(data.level);
+
+    document.getElementById(
+        "credits"
+    ).textContent =
+        data.credits;
+
+    document.getElementById(
+        "sc"
+    ).textContent =
+        data.sc;
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        data.playerName;
+
+    document.getElementById(
+        "profileLevel"
+    ).textContent =
+        data.level;
+
+    document.getElementById(
+        "profileXP"
+    ).textContent =
+        data.xp;
+
+    document.getElementById(
+        "profileCredits"
+    ).textContent =
+        data.credits;
+
+}
+
+
+/* RANK */
+
+function getRank(level){
+
+    if(level >= 50)
+        return "LEGEND";
+
+    if(level >= 30)
+        return "ELITE";
+
+    if(level >= 20)
+        return "VETERAN";
+
+    if(level >= 10)
+        return "OPERATIVE";
+
+    return "ROOKIE";
+
+}
+
+
+/* MODAL */
+
+function openModal(id){
+
+    document.getElementById(id).style.display =
+        "flex";
+
+}
+
+function closeModal(id){
+
+    document.getElementById(id).style.display =
+        "none";
+
+}
+
+
+/* CLOSE BY BACKGROUND */
+
+document.querySelectorAll(".modal")
+.forEach(function(modal){
+
+    modal.addEventListener(
+        "click",
+        function(e){
+
+            if(e.target === modal){
+
+                modal.style.display =
+                    "none";
+
+            }
+
+        }
     );
+
+});
+
+
+/* MODE */
+
+function selectMode(button,mode){
+
+    document
+        .querySelectorAll(".mode button")
+        .forEach(
+            function(btn){
+                btn.classList.remove("active");
+            }
+        );
+
+    button.classList.add("active");
+
+    data.selectedMode =
+        mode;
+
+    save();
+
 }
+
+
+/* START */
 
 function startGame(){
 
-    saveData();
+    save();
 
-    showToast(
-        "Starting " +
-        data.selectedMode +
-        " mission..."
+    window.location.href =
+        "game.html";
+
+}
+
+
+/* BUY */
+
+function buyItem(price){
+
+    if(data.credits < price){
+
+        showMessage(
+            "Not enough Credits"
+        );
+
+        return;
+
+    }
+
+    data.credits -= price;
+
+    save();
+
+    updateUI();
+
+    showMessage(
+        "Item purchased!"
     );
 
-    setTimeout(function(){
-
-        window.location.href = "game.html";
-
-    },500);
 }
 
-function openPage(page){
 
-    showToast(
-        page.toUpperCase() +
-        " module coming soon"
+function buySC(){
+
+    if(data.credits < 500){
+
+        showMessage(
+            "Not enough Credits"
+        );
+
+        return;
+
+    }
+
+    data.credits -= 500;
+
+    data.sc += 50;
+
+    save();
+
+    updateUI();
+
+    showMessage(
+        "+50 SC"
     );
+
 }
 
-function showToast(message){
 
-    const toast =
-        document.getElementById("toast");
+/* REWARD */
 
-    toast.textContent = message;
+function claimReward(amount){
 
-    toast.classList.add("show");
+    data.xp += amount;
 
-    setTimeout(function(){
+    save();
 
-        toast.classList.remove("show");
+    updateUI();
 
-    },1800);
+    showMessage(
+        "+" +
+        amount +
+        " XP received!"
+    );
+
 }
+
+
+/* SPIN */
+
+let spinning = false;
+
+function spinWheel(){
+
+    if(spinning)
+        return;
+
+    spinning = true;
+
+    const wheel =
+        document.getElementById("wheel");
+
+    const rotation =
+        1440 +
+        Math.floor(
+            Math.random() * 360
+        );
+
+    wheel.style.transform =
+        "rotate(" +
+        rotation +
+        "deg)";
+
+
+    setTimeout(
+        function(){
+
+            const rewards = [
+                "100 Credits",
+                "250 Credits",
+                "50 SC",
+                "100 XP"
+            ];
+
+            const reward =
+                rewards[
+                    Math.floor(
+                        Math.random() *
+                        rewards.length
+                    )
+                ];
+
+
+            if(reward === "100 Credits")
+                data.credits += 100;
+
+            if(reward === "250 Credits")
+                data.credits += 250;
+
+            if(reward === "50 SC")
+                data.sc += 50;
+
+            if(reward === "100 XP")
+                data.xp += 100;
+
+
+            save();
+
+            updateUI();
+
+            showMessage(
+                "YOU WON: " +
+                reward
+            );
+
+            spinning = false;
+
+        },
+        2100
+    );
+
+}
+
+
+/* MESSAGE */
+
+function showMessage(message){
+
+    alert(message);
+
+}
+
+
+/* START */
+
+updat
+    eUI();
 
 </script>
 
 </body>
-</html>
+    </html>
