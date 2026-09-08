@@ -2,18 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Shadow Strike - 3D Field</title>
+
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover"
+>
+
+<title>Shadow Strike 3D</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
     touch-action:none;
 }
 
-html,body{
+html,
+body{
     width:100%;
     height:100%;
     overflow:hidden;
@@ -24,233 +36,676 @@ html,body{
 #game{
     position:fixed;
     inset:0;
+    overflow:hidden;
 }
 
 canvas{
     display:block;
+    width:100%;
+    height:100%;
 }
 
-/* HUD */
+
+/* ===============================
+   LOADING
+================================ */
+
+#loading{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #102331 0%,
+            #05090e 55%,
+            #020406 100%
+        );
+
+    color:#00eaff;
+
+    transition:
+        opacity .35s ease;
+}
+
+.loading-title{
+    font-size:26px;
+    font-weight:900;
+    letter-spacing:5px;
+
+    text-shadow:
+        0 0 10px #00eaff,
+        0 0 30px rgba(0,234,255,.4);
+}
+
+.loading-sub{
+    margin-top:10px;
+
+    font-size:11px;
+    letter-spacing:3px;
+
+    color:#8195a6;
+}
+
+.loader{
+    width:220px;
+    height:4px;
+
+    margin-top:24px;
+
+    overflow:hidden;
+
+    background:#15212c;
+
+    border-radius:10px;
+}
+
+.loader-bar{
+    width:35%;
+    height:100%;
+
+    background:#00eaff;
+
+    box-shadow:
+        0 0 12px #00eaff;
+
+    animation:
+        loadingMove 1.1s infinite;
+}
+
+@keyframes loadingMove{
+
+    0%{
+        transform:translateX(-120%);
+    }
+
+    100%{
+        transform:translateX(400%);
+    }
+
+}
+
+
+/* ===============================
+   ERROR
+================================ */
+
+#errorScreen{
+    position:fixed;
+    inset:0;
+
+    z-index:10000;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    background:#05080c;
+
+    color:white;
+}
+
+.errorBox{
+    width:min(90%,380px);
+
+    padding:25px;
+
+    border:
+        1px solid
+        rgba(0,234,255,.35);
+
+    border-radius:12px;
+
+    background:
+        rgba(5,15,23,.95);
+
+    box-shadow:
+        0 0 30px
+        rgba(0,220,255,.12);
+}
+
+.errorTitle{
+    color:#ff5a68;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    letter-spacing:2px;
+}
+
+.errorText{
+    margin-top:12px;
+
+    color:#94a5b4;
+
+    font-size:12px;
+
+    line-height:1.7;
+}
+
+.reload{
+    margin-top:20px;
+
+    padding:12px 25px;
+
+    border:
+        1px solid
+        #00eaff;
+
+    border-radius:7px;
+
+    background:#07131c;
+
+    color:#00eaff;
+
+    font-weight:bold;
+}
+
+
+/* ===============================
+   HUD
+================================ */
 
 #hud{
     position:fixed;
     inset:0;
+
+    z-index:50;
+
     pointer-events:none;
+
     color:white;
 }
 
+
+/* TOP */
+
 .top{
     position:absolute;
-    top:12px;
+
+    top:
+        calc(12px + env(safe-area-inset-top));
+
     left:15px;
     right:15px;
+
     display:flex;
+
     justify-content:space-between;
+
     align-items:flex-start;
 }
 
 .box{
-    background:rgba(3,8,14,.72);
-    border:1px solid rgba(0,220,255,.45);
-    padding:9px 13px;
-    border-radius:6px;
-    backdrop-filter:blur(5px);
+    padding:10px 14px;
+
+    min-width:125px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.45);
+
+    border-radius:7px;
+
+    background:
+        rgba(3,8,14,.76);
+
+    backdrop-filter:
+        blur(6px);
+
+    box-shadow:
+        0 0 15px
+        rgba(0,220,255,.08);
+}
+
+.title-small{
+    font-size:9px;
+
+    color:#6e8496;
+
+    letter-spacing:2px;
+
+    margin-bottom:7px;
 }
 
 .hp{
     color:#42f5a7;
-    font-size:13px;
+
+    font-size:14px;
+
     font-weight:bold;
 }
 
 .energy{
     color:#35dfff;
+
     font-size:12px;
-    margin-top:5px;
+
+    margin-top:6px;
 }
 
+
+/* MINIMAP */
+
 .map{
-    width:110px;
-    height:75px;
-    border:1px solid rgba(0,220,255,.55);
-    background:rgba(0,10,18,.75);
+    width:112px;
+    height:78px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.55);
+
+    background:
+        rgba(0,10,18,.78);
+
     position:relative;
+
+    overflow:hidden;
 }
 
 .map:before,
 .map:after{
     content:"";
+
     position:absolute;
-    background:rgba(0,220,255,.18);
+
+    background:
+        rgba(0,220,255,.18);
 }
 
 .map:before{
     width:100%;
     height:1px;
+
+    left:0;
     top:50%;
 }
 
 .map:after{
-    height:100%;
     width:1px;
+    height:100%;
+
     left:50%;
+    top:0;
+}
+
+.map-grid{
+    position:absolute;
+
+    inset:0;
+
+    opacity:.18;
+
+    background-image:
+        linear-gradient(
+            rgba(0,220,255,.25) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(0,220,255,.25) 1px,
+            transparent 1px
+        );
+
+    background-size:20px 20px;
 }
 
 .playerDot{
     position:absolute;
+
     left:50%;
     top:50%;
-    width:7px;
-    height:7px;
-    background:#00efff;
+
+    width:8px;
+    height:8px;
+
+    transform:
+        translate(-50%,-50%);
+
     border-radius:50%;
-    box-shadow:0 0 8px #00efff;
+
+    background:#00efff;
+
+    box-shadow:
+        0 0 8px #00efff,
+        0 0 16px #00efff;
 }
 
-/* CROSSHAIR */
+
+/* ===============================
+   MISSION
+================================ */
+
+.mission{
+    position:absolute;
+
+    top:110px;
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    padding:
+        7px 14px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.25);
+
+    background:
+        rgba(0,8,15,.55);
+
+    border-radius:5px;
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    color:#8ca6b7;
+}
+
+
+/* ===============================
+   CROSSHAIR
+================================ */
 
 #crosshair{
     position:absolute;
+
     left:50%;
     top:50%;
-    width:28px;
-    height:28px;
-    transform:translate(-50%,-50%);
+
+    width:34px;
+    height:34px;
+
+    transform:
+        translate(-50%,-50%);
+
+    transition:
+        transform .12s ease;
 }
 
 #crosshair:before,
 #crosshair:after{
     content:"";
+
     position:absolute;
-    background:rgba(255,255,255,.85);
+
+    background:
+        rgba(255,255,255,.9);
+
+    box-shadow:
+        0 0 5px
+        rgba(255,255,255,.5);
 }
 
 #crosshair:before{
     width:1px;
-    height:28px;
-    left:13px;
+    height:34px;
+
+    left:16px;
 }
 
 #crosshair:after{
+    width:34px;
     height:1px;
-    width:28px;
-    top:13px;
+
+    top:16px;
 }
 
-/* MOBILE CONTROLS */
 
-#controls{
+/* ===============================
+   EXIT
+================================ */
+
+#exit{
     position:absolute;
-    inset:0;
+
+    top:
+        calc(12px + env(safe-area-inset-top));
+
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    pointer-events:auto;
+
+    padding:
+        8px 15px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.28);
+
+    border-radius:6px;
+
+    background:
+        rgba(0,0,0,.6);
+
+    color:white;
+
+    font-size:11px;
+
+    font-weight:bold;
 }
+
+
+/* ===============================
+   JOYSTICK
+================================ */
 
 #joystick{
     position:absolute;
-    left:25px;
-    bottom:25px;
+
+    left:24px;
+
+    bottom:
+        calc(24px + env(safe-area-inset-bottom));
+
     width:125px;
     height:125px;
-    border:2px solid rgba(0,220,255,.4);
+
+    border:
+        2px solid
+        rgba(0,220,255,.38);
+
     border-radius:50%;
-    background:rgba(0,10,18,.28);
+
+    background:
+        rgba(0,10,18,.28);
+
+    pointer-events:auto;
+
+    box-shadow:
+        inset 0 0 25px
+        rgba(0,220,255,.05);
+}
+
+#joystick:after{
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:2px;
+    height:2px;
+
+    transform:
+        translate(-50%,-50%);
+
+    background:#00eaff;
+
+    box-shadow:
+        0 0 8px #00eaff;
 }
 
 #stick{
     position:absolute;
+
     left:50%;
     top:50%;
-    width:60px;
-    height:60px;
-    transform:translate(-50%,-50%);
+
+    width:58px;
+    height:58px;
+
+    transform:
+        translate(-50%,-50%);
+
     border-radius:50%;
-    background:rgba(0,190,230,.25);
-    border:2px solid rgba(0,230,255,.7);
-    box-shadow:0 0 20px rgba(0,220,255,.25);
+
+    background:
+        rgba(0,190,230,.23);
+
+    border:
+        2px solid
+        rgba(0,230,255,.72);
+
+    box-shadow:
+        0 0 20px
+        rgba(0,220,255,.25);
 }
+
+
+/* ===============================
+   ACTION BUTTONS
+================================ */
 
 .action{
     position:absolute;
-    width:67px;
-    height:67px;
+
+    width:66px;
+    height:66px;
+
     border-radius:50%;
-    border:1px solid rgba(0,230,255,.7);
-    background:rgba(3,12,21,.72);
+
+    border:
+        1px solid
+        rgba(0,230,255,.7);
+
+    background:
+        rgba(3,12,21,.75);
+
     color:white;
+
     font-size:22px;
-    box-shadow:0 0 18px rgba(0,220,255,.18);
+
+    pointer-events:auto;
+
+    box-shadow:
+        0 0 18px
+        rgba(0,220,255,.18);
 }
 
 #ability{
-    right:30px;
-    bottom:32px;
+    right:25px;
+
+    bottom:
+        calc(24px + env(safe-area-inset-bottom));
 }
 
 #shield{
-    right:108px;
-    bottom:70px;
+    right:105px;
+
+    bottom:
+        calc(67px + env(safe-area-inset-bottom));
 }
 
 #scan{
     right:185px;
-    bottom:38px;
+
+    bottom:
+        calc(30px + env(safe-area-inset-bottom));
 }
 
-#exit{
+
+/* ===============================
+   NOTIFICATION
+================================ */
+
+#notification{
     position:absolute;
-    top:12px;
+
     left:50%;
-    transform:translateX(-50%);
-    padding:8px 15px;
-    border:1px solid rgba(255,255,255,.3);
-    background:rgba(0,0,0,.55);
-    color:white;
-    border-radius:5px;
-    pointer-events:auto;
-}
+    bottom:25%;
 
-/* LOADING */
+    transform:
+        translate(-50%,20px);
 
-#loading{
-    position:fixed;
-    inset:0;
-    z-index:20;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    background:#04070c;
+    opacity:0;
+
+    padding:
+        10px 18px;
+
+    border:
+        1px solid
+        rgba(0,234,255,.5);
+
+    border-radius:6px;
+
+    background:
+        rgba(3,10,17,.85);
+
     color:#00eaff;
-    letter-spacing:3px;
+
+    font-size:11px;
+
+    letter-spacing:2px;
+
+    transition:
+        .25s ease;
 }
 
-.loader{
-    width:190px;
-    height:4px;
-    margin-top:18px;
-    background:#182331;
-    overflow:hidden;
+#notification.show{
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
 }
 
-.loader i{
-    display:block;
-    height:100%;
-    width:40%;
-    background:#00eaff;
-    animation:load 1.2s infinite;
-}
 
-@keyframes load{
-    from{transform:translateX(-100%)}
-    to{transform:translateX(500%)}
-}
+/* ===============================
+   MOBILE LANDSCAPE
+================================ */
 
 @media(max-height:430px){
+
+    .box{
+        min-width:110px;
+
+        padding:
+            7px 10px;
+    }
+
+    .map{
+        width:95px;
+        height:62px;
+    }
+
+    .mission{
+        top:80px;
+    }
 
     #joystick{
         width:100px;
         height:100px;
-        bottom:15px;
-        left:18px;
+
+        left:17px;
+
+        bottom:
+            calc(15px + env(safe-area-inset-bottom));
     }
 
     #stick{
@@ -264,92 +719,213 @@ canvas{
     }
 
     #ability{
-        right:20px;
-        bottom:18px;
+        right:18px;
+        bottom:
+            calc(15px + env(safe-area-inset-bottom));
     }
 
     #shield{
-        right:82px;
-        bottom:55px;
+        right:80px;
+        bottom:
+            calc(52px + env(safe-area-inset-bottom));
     }
 
     #scan{
-        right:145px;
-        bottom:18px;
+        right:142px;
+        bottom:
+            calc(18px + env(safe-area-inset-bottom));
     }
 }
+
+
+/* ===============================
+   PORTRAIT
+================================ */
+
+@media(orientation:portrait){
+
+    .mission{
+        top:105px;
+    }
+
+    #joystick{
+        width:110px;
+        height:110px;
+    }
+
+    #stick{
+        width:52px;
+        height:52px;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
+
 <div id="game"></div>
 
+
+<!-- LOADING -->
+
 <div id="loading">
-    SHADOW STRIKE
-    <div style="font-size:10px;margin-top:8px;color:#71869c">
-        LOADING 3D FIELD
+
+    <div class="loading-title">
+        SHADOW STRIKE
     </div>
-    <div class="loader"><i></i></div>
+
+    <div class="loading-sub">
+        INITIALIZING 3D FIELD
+    </div>
+
+    <div class="loader">
+        <div class="loader-bar"></div>
+    </div>
+
 </div>
+
+
+<!-- ERROR -->
+
+<div id="errorScreen">
+
+    <div class="errorBox">
+
+        <div class="errorTitle">
+            3D ENGINE ERROR
+        </div>
+
+        <div
+            class="errorText"
+            id="errorText"
+        >
+            Unable to initialize 3D engine.
+        </div>
+
+        <button
+            class="reload"
+            onclick="location.reload()"
+        >
+            TRY AGAIN
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- HUD -->
 
 <div id="hud">
 
     <div class="top">
 
         <div class="box">
-            <div class="hp">◆ HP 100</div>
-            <div class="energy">⚡ ENERGY 100</div>
+
+            <div class="title-small">
+                SHADOW STRIKE
+            </div>
+
+            <div class="hp">
+                ◆ HP 100
+            </div>
+
+            <div class="energy">
+                ⚡ ENERGY 100
+            </div>
+
         </div>
 
+
         <div class="map">
+
+            <div class="map-grid"></div>
+
             <div class="playerDot"></div>
+
         </div>
 
     </div>
 
+
+    <div class="mission">
+        OPERATION • NIGHTFALL
+    </div>
+
+
     <div id="crosshair"></div>
 
-    <button id="exit">× EXIT</button>
 
-    <div id="controls">
+    <button id="exit">
+        × EXIT
+    </button>
 
-        <div id="joystick">
-            <div id="stick"></div>
-        </div>
 
-        <button class="action" id="ability">⚡</button>
-        <button class="action" id="shield">🛡️</button>
-        <button class="action" id="scan">📡</button>
+    <div id="joystick">
 
+        <div id="stick"></div>
+
+    </div>
+
+
+    <button
+        class="action"
+        id="ability"
+    >
+        ⚡
+    </button>
+
+
+    <button
+        class="action"
+        id="shield"
+    >
+        🛡️
+    </button>
+
+
+    <button
+        class="action"
+        id="scan"
+    >
+        📡
+    </button>
+
+
+    <div id="notification">
+        SYSTEM READY
     </div>
 
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
-
 <script>
 
-/* =====================================
-   SHADOW STRIKE 3D FIELD
-===================================== */
+const THREE_CDNS = [
+
+    "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js",
+
+    "https://unpkg.com/three@0.161.0/build/three.min.js"
+
+];
 
 let scene;
 let camera;
 let renderer;
 
-let clock = new THREE.Clock();
+let clock;
 
-let velocity = new THREE.Vector3();
+let velocity;
+
+let yaw = 0;
+let pitch = 0;
 
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
-
-let yaw = 0;
-let pitch = 0;
 
 let touchLook = null;
 let joystickTouch = null;
@@ -357,33 +933,238 @@ let joystickTouch = null;
 const worldSize = 1800;
 
 
-/* =====================================
-   START
-===================================== */
+/* ======================================
+   LOADING ENGINE
+====================================== */
 
-function init(){
+function loadEngine(index = 0){
 
-    scene = new THREE.Scene();
+    if(index >= THREE_CDNS.length){
+
+        showError(
+            "Three.js could not be loaded. " +
+            "Check your internet connection " +
+            "and reload the game."
+        );
+
+        return;
+    }
+
+
+    const script =
+        document.createElement("script");
+
+
+    script.src =
+        THREE_CDNS[index];
+
+
+    script.onload = function(){
+
+        if(typeof THREE === "undefined"){
+
+            loadEngine(index + 1);
+
+            return;
+        }
+
+
+        console.log(
+            "Three.js loaded successfully."
+        );
+
+
+        startGame();
+
+    };
+
+
+    script.onerror = function(){
+
+        console.log(
+            "CDN failed:",
+            THREE_CDNS[index]
+        );
+
+
+        loadEngine(index + 1);
+
+    };
+
+
+    document.head.appendChild(script);
+
+}
+
+
+/* ======================================
+   ERROR
+====================================== */
+
+function showError(message){
+
+    document.getElementById(
+        "loading"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "errorScreen"
+    ).style.display = "flex";
+
+
+    document.getElementById(
+        "errorText"
+    ).textContent = message;
+
+}
+
+
+/* ======================================
+   WEBGL CHECK
+====================================== */
+
+function checkWebGL(){
+
+    try{
+
+        const canvas =
+            document.createElement("canvas");
+
+
+        const gl =
+            canvas.getContext("webgl2") ||
+            canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+
+
+        if(!gl){
+
+            return false;
+        }
+
+
+        return true;
+
+    }catch(error){
+
+        return false;
+
+    }
+
+}
+
+
+/* ======================================
+   START GAME
+====================================== */
+
+function startGame(){
+
+    if(!checkWebGL()){
+
+        showError(
+            "WebGL is not available on this device/browser."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        clock =
+            new THREE.Clock();
+
+
+        velocity =
+            new THREE.Vector3();
+
+
+        createScene();
+
+        createCamera();
+
+        createRenderer();
+
+        createLights();
+
+        createTerrain();
+
+        createCity();
+
+        createRoads();
+
+        createProps();
+
+        createSky();
+
+        setupControls();
+
+        window.addEventListener(
+            "resize",
+            resize
+        );
+
+
+        hideLoading();
+
+        animate();
+
+
+    }catch(error){
+
+        console.error(error);
+
+        showError(
+            "The 3D field could not start."
+        );
+
+    }
+
+}
+
+
+/* ======================================
+   SCENE
+====================================== */
+
+function createScene(){
+
+    scene =
+        new THREE.Scene();
+
 
     scene.background =
-        new THREE.Color(0x07101a);
+        new THREE.Color(
+            0x07101a
+        );
+
 
     scene.fog =
         new THREE.Fog(
             0x07101a,
-            180,
-            900
+            220,
+            1000
         );
 
+}
 
-    /* CAMERA */
 
-    camera = new THREE.PerspectiveCamera(
-        72,
-        innerWidth / innerHeight,
-        0.1,
-        1800
-    );
+/* ======================================
+   CAMERA
+====================================== */
+
+function createCamera(){
+
+    camera =
+        new THREE.PerspectiveCamera(
+            72,
+            innerWidth / innerHeight,
+            0.1,
+            2000
+        );
+
 
     camera.position.set(
         0,
@@ -392,41 +1173,73 @@ function init(){
     );
 
 
-    /* RENDERER */
+    camera.rotation.order =
+        "YXZ";
+
+}
+
+
+/* ======================================
+   RENDERER
+====================================== */
+
+function createRenderer(){
 
     renderer =
         new THREE.WebGLRenderer({
-            antialias:true,
-            powerPreference:"high-performance"
+
+            antialias:false,
+
+            powerPreference:
+                "high-performance"
+
         });
 
+
     renderer.setPixelRatio(
-        Math.min(devicePixelRatio,1.5)
+        Math.min(
+            window.devicePixelRatio || 1,
+            1.25
+        )
     );
+
 
     renderer.setSize(
         innerWidth,
         innerHeight
     );
 
-    renderer.shadowMap.enabled = true;
+
+    renderer.shadowMap.enabled =
+        true;
+
 
     renderer.shadowMap.type =
-        THREE.PCFSoftShadowMap;
+        THREE.PCFShadowMap;
+
 
     document
         .getElementById("game")
-        .appendChild(renderer.domElement);
+        .appendChild(
+            renderer.domElement
+        );
+
+}
 
 
-    /* LIGHT */
+/* ======================================
+   LIGHTS
+====================================== */
+
+function createLights(){
 
     const hemi =
         new THREE.HemisphereLight(
             0x9bc9ff,
             0x172015,
-            1.7
+            1.5
         );
+
 
     scene.add(hemi);
 
@@ -434,8 +1247,9 @@ function init(){
     const sun =
         new THREE.DirectionalLight(
             0xffffff,
-            2.2
+            2
         );
+
 
     sun.position.set(
         -250,
@@ -443,111 +1257,113 @@ function init(){
         180
     );
 
+
     sun.castShadow = true;
 
-    sun.shadow.mapSize.width = 2048;
-    sun.shadow.mapSize.height = 2048;
 
-    sun.shadow.camera.left = -500;
-    sun.shadow.camera.right = 500;
-    sun.shadow.camera.top = 500;
-    sun.shadow.camera.bottom = -500;
+    sun.shadow.mapSize.width =
+        1024;
+
+    sun.shadow.mapSize.height =
+        1024;
+
+
+    sun.shadow.camera.left =
+        -500;
+
+    sun.shadow.camera.right =
+        500;
+
+    sun.shadow.camera.top =
+        500;
+
+    sun.shadow.camera.bottom =
+        -500;
+
 
     scene.add(sun);
 
-
-    createTerrain();
-
-    createCity();
-
-    createRoads();
-
-    createProps();
-
-    createSkyDetails();
-
-
-    setupControls();
-
-    window.addEventListener(
-        "resize",
-        resize
-    );
-
-
-    setTimeout(()=>{
-
-        document.getElementById(
-            "loading"
-        ).style.display="none";
-
-    },1200);
-
-
-    animate();
 }
 
 
-/* =====================================
+/* ======================================
    TERRAIN
-===================================== */
+====================================== */
 
 function createTerrain(){
 
-    const groundGeometry =
+    const geometry =
         new THREE.PlaneGeometry(
             worldSize,
             worldSize,
-            100,
-            100
+            60,
+            60
         );
 
-    const groundMaterial =
+
+    const material =
         new THREE.MeshStandardMaterial({
-            color:0x18241b,
-            roughness:1
+
+            color:
+                0x18241b,
+
+            roughness:
+                1
+
         });
+
 
     const ground =
         new THREE.Mesh(
-            groundGeometry,
-            groundMaterial
+            geometry,
+            material
         );
 
-    ground.rotation.x =
-        -Math.PI/2;
 
-    ground.receiveShadow = true;
+    ground.rotation.x =
+        -Math.PI / 2;
+
+
+    ground.receiveShadow =
+        true;
+
 
     scene.add(ground);
 
 
-    /* GRID */
-
     const grid =
         new THREE.GridHelper(
             worldSize,
-            180,
+            120,
             0x263a32,
             0x15231f
         );
 
-    grid.position.y=.02;
 
-    grid.material.transparent=true;
-    grid.material.opacity=.22;
+    grid.position.y =
+        .02;
+
+
+    grid.material.transparent =
+        true;
+
+
+    grid.material.opacity =
+        .16;
+
 
     scene.add(grid);
+
 }
 
 
-/* =====================================
-   CITY
-===================================== */
+/* ======================================
+   BUILDINGS
+====================================== */
 
 function createCity(){
 
-    const positions = [
+    const buildings = [
 
         [-330,-260,120,80,100],
         [-160,-290,90,100,150],
@@ -571,19 +1387,26 @@ function createCity(){
     ];
 
 
-    positions.forEach(
-        data=>{
+    buildings.forEach(
+        b => {
+
             createBuilding(
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4]
+                b[0],
+                b[1],
+                b[2],
+                b[3],
+                b[4]
             );
+
         }
     );
+
 }
 
+
+/* ======================================
+   SINGLE BUILDING
+====================================== */
 
 function createBuilding(
     x,
@@ -593,68 +1416,92 @@ function createBuilding(
     height
 ){
 
-    const geometry =
-        new THREE.BoxGeometry(
-            width,
-            height,
-            depth
-        );
+    const colors = [
+
+        0x27323b,
+        0x202b35,
+        0x29363e,
+        0x222d34
+
+    ];
+
 
     const material =
         new THREE.MeshStandardMaterial({
-            color:
-                Math.random()>.5
-                ?0x27323b
-                :0x202b35,
 
-            roughness:.85
+            color:
+                colors[
+                    Math.floor(
+                        Math.random() *
+                        colors.length
+                    )
+                ],
+
+            roughness:
+                .86
+
         });
+
 
     const building =
         new THREE.Mesh(
-            geometry,
+
+            new THREE.BoxGeometry(
+                width,
+                height,
+                depth
+            ),
+
             material
+
         );
+
 
     building.position.set(
         x,
-        height/2,
+        height / 2,
         z
     );
 
-    building.castShadow=true;
-    building.receiveShadow=true;
+
+    building.castShadow =
+        true;
+
+    building.receiveShadow =
+        true;
+
 
     scene.add(building);
 
 
     /* ROOF */
 
-    const roofGeometry =
-        new THREE.BoxGeometry(
-            width+5,
-            4,
-            depth+5
-        );
-
-    const roofMaterial =
-        new THREE.MeshStandardMaterial({
-            color:0x101820
-        });
-
     const roof =
         new THREE.Mesh(
-            roofGeometry,
-            roofMaterial
+
+            new THREE.BoxGeometry(
+                width + 5,
+                4,
+                depth + 5
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x101820
+            })
+
         );
+
 
     roof.position.set(
         x,
-        height+2,
+        height + 2,
         z
     );
 
-    roof.castShadow=true;
+
+    roof.castShadow =
+        true;
+
 
     scene.add(roof);
 
@@ -663,53 +1510,78 @@ function createBuilding(
 
     const windowMaterial =
         new THREE.MeshBasicMaterial({
-            color:0x35d9ff
+
+            color:
+                0x35d9ff
+
         });
 
+
     for(
-        let yy=18;
-        yy<height-8;
-        yy+=18
+        let y = 18;
+        y < height - 8;
+        y += 22
     ){
 
         for(
-            let xx=-width/2+12;
-            xx<width/2-5;
-            xx+=22
+            let xx =
+                -width / 2 + 12;
+
+            xx <
+                width / 2 - 5;
+
+            xx += 24
         ){
 
-            const w =
+            const window =
                 new THREE.Mesh(
+
                     new THREE.BoxGeometry(
                         8,
                         7,
                         .5
                     ),
+
                     windowMaterial
+
                 );
 
-            w.position.set(
-                x+xx,
-                yy,
-                z-depth/2-.3
+
+            window.position.set(
+
+                x + xx,
+
+                y,
+
+                z - depth / 2 - .3
+
             );
 
-            scene.add(w);
+
+            scene.add(window);
+
         }
+
     }
+
 }
 
 
-/* =====================================
+/* ======================================
    ROADS
-===================================== */
+====================================== */
 
 function createRoads(){
 
-    const roadMaterial =
+    const material =
         new THREE.MeshStandardMaterial({
-            color:0x10161b,
-            roughness:.95
+
+            color:
+                0x10161b,
+
+            roughness:
+                .95
+
         });
 
 
@@ -730,53 +1602,69 @@ function createRoads(){
     ];
 
 
-    roads.forEach(r=>{
+    roads.forEach(
+        r => {
 
-        const mesh =
-            new THREE.Mesh(
-                new THREE.PlaneGeometry(
-                    r[2],
-                    r[3]
-                ),
-                roadMaterial
+            const road =
+                new THREE.Mesh(
+
+                    new THREE.PlaneGeometry(
+                        r[2],
+                        r[3]
+                    ),
+
+                    material
+
+                );
+
+
+            road.rotation.x =
+                -Math.PI / 2;
+
+
+            road.position.set(
+                r[0],
+                .05,
+                r[1]
             );
 
-        mesh.rotation.x =
-            -Math.PI/2;
 
-        mesh.position.set(
-            r[0],
-            .05,
-            r[1]
-        );
+            scene.add(road);
 
-        scene.add(mesh);
-
-    });
+        }
+    );
 
 
-    /* ROAD LINES */
+    /* ROAD MARKINGS */
 
     const lineMaterial =
         new THREE.MeshBasicMaterial({
-            color:0x58645e
+
+            color:
+                0x58645e
+
         });
 
+
     for(
-        let x=-850;
-        x<850;
-        x+=25
+        let x = -850;
+        x < 850;
+        x += 35
     ){
 
         const line =
             new THREE.Mesh(
+
                 new THREE.BoxGeometry(
                     10,
                     .08,
                     1.5
                 ),
+
                 lineMaterial
+
             );
+
 
         line.position.set(
             x,
@@ -784,113 +1672,142 @@ function createRoads(){
             0
         );
 
+
         scene.add(line);
+
     }
+
 }
 
 
-/* =====================================
+/* ======================================
    PROPS
-===================================== */
+====================================== */
 
 function createProps(){
 
     for(
-        let i=0;
-        i<170;
+        let i = 0;
+        i < 100;
         i++
     ){
 
         const x =
-            (Math.random()-.5)*1500;
+            (Math.random() - .5) *
+            1500;
+
 
         const z =
-            (Math.random()-.5)*1500;
+            (Math.random() - .5) *
+            1500;
 
 
-        /* CRATES */
-
-        if(Math.random()<.45){
+        if(
+            Math.random() < .5
+        ){
 
             const size =
-                4+Math.random()*5;
+                4 +
+                Math.random() * 5;
+
 
             const crate =
                 new THREE.Mesh(
+
                     new THREE.BoxGeometry(
                         size,
                         size,
                         size
                     ),
+
                     new THREE.MeshStandardMaterial({
                         color:0x514b3b
                     })
+
                 );
+
 
             crate.position.set(
                 x,
-                size/2,
+                size / 2,
                 z
             );
 
-            crate.castShadow=true;
+
+            crate.castShadow =
+                true;
+
 
             scene.add(crate);
 
-        }
+        }else{
 
+            const height =
+                8 +
+                Math.random() * 20;
 
-        /* TOWERS */
-
-        else{
-
-            const h =
-                8+Math.random()*20;
 
             const pole =
                 new THREE.Mesh(
+
                     new THREE.CylinderGeometry(
                         .7,
                         .9,
-                        h,
+                        height,
                         8
                     ),
+
                     new THREE.MeshStandardMaterial({
                         color:0x252d32
                     })
+
                 );
+
 
             pole.position.set(
                 x,
-                h/2,
+                height / 2,
                 z
             );
 
-            pole.castShadow=true;
+
+            pole.castShadow =
+                true;
+
 
             scene.add(pole);
+
         }
+
     }
+
 }
 
 
-/* =====================================
-   SKY
-===================================== */
+/* ======================================
+   SKY + MOUNTAINS
+====================================== */
 
-function createSkyDetails(){
+function createSky(){
 
     const moon =
         new THREE.Mesh(
+
             new THREE.SphereGeometry(
                 45,
-                32,
-                32
+                24,
+                24
             ),
+
             new THREE.MeshBasicMaterial({
-                color:0x9dc8e6
+
+                color:
+                    0x9dc8e6
+
             })
+
         );
+
 
     moon.position.set(
         -500,
@@ -898,113 +1815,186 @@ function createSkyDetails(){
         -700
     );
 
+
     scene.add(moon);
 
 
-    /* DISTANT MOUNTAINS */
-
     for(
-        let i=0;
-        i<35;
+        let i = 0;
+        i < 24;
         i++
     ){
 
-        const h =
-            60+Math.random()*180;
+        const height =
+            60 +
+            Math.random() *
+            180;
+
 
         const mountain =
             new THREE.Mesh(
+
                 new THREE.ConeGeometry(
-                    80+Math.random()*80,
-                    h,
+                    80 +
+                    Math.random() *
+                    80,
+
+                    height,
+
                     5
                 ),
+
                 new THREE.MeshStandardMaterial({
-                    color:0x111b1c,
-                    roughness:1
+
+                    color:
+                        0x111b1c,
+
+                    roughness:
+                        1
+
                 })
+
             );
 
-        const angle =
-            i/35*Math.PI*2;
 
-        const radius=700;
+        const angle =
+            i / 24 *
+            Math.PI *
+            2;
+
+
+        const radius =
+            700;
+
 
         mountain.position.set(
-            Math.cos(angle)*radius,
-            h/2,
-            Math.sin(angle)*radius
+
+            Math.cos(angle) *
+            radius,
+
+            height / 2,
+
+            Math.sin(angle) *
+            radius
+
         );
 
+
         scene.add(mountain);
+
     }
+
 }
 
 
-/* =====================================
+/* ======================================
    CONTROLS
-===================================== */
+====================================== */
 
 function setupControls(){
 
-    const joy =
-        document.getElementById("joystick");
+    const joystick =
+        document.getElementById(
+            "joystick"
+        );
+
 
     const stick =
-        document.getElementById("stick");
+        document.getElementById(
+            "stick"
+        );
 
 
-    joy.addEventListener(
+    joystick.addEventListener(
         "touchstart",
-        e=>{
+        function(e){
+
+            e.preventDefault();
+
             joystickTouch =
-                e.changedTouches[0].identifier;
+                e.changedTouches[0]
+                .identifier;
+
+        },
+        {
+            passive:false
         }
     );
 
 
-    joy.addEventListener(
+    joystick.addEventListener(
         "touchmove",
-        e=>{
+        function(e){
+
+            e.preventDefault();
+
 
             for(
-                const t of e.changedTouches
+                const touch of
+                e.changedTouches
             ){
 
                 if(
-                    t.identifier !==
+                    touch.identifier !==
                     joystickTouch
-                ) continue;
+                ){
+                    continue;
+                }
+
 
                 const rect =
-                    joy.getBoundingClientRect();
+                    joystick
+                    .getBoundingClientRect();
+
 
                 let dx =
-                    t.clientX -
-                    (rect.left+rect.width/2);
+                    touch.clientX -
+                    (
+                        rect.left +
+                        rect.width / 2
+                    );
+
 
                 let dy =
-                    t.clientY -
-                    (rect.top+rect.height/2);
+                    touch.clientY -
+                    (
+                        rect.top +
+                        rect.height / 2
+                    );
 
-                const max=38;
+
+                const max =
+                    38;
+
 
                 const distance =
                     Math.sqrt(
-                        dx*dx+dy*dy
+                        dx * dx +
+                        dy * dy
                     );
 
-                if(distance>max){
+
+                if(
+                    distance > max
+                ){
 
                     dx =
-                        dx/distance*max;
+                        dx /
+                        distance *
+                        max;
+
 
                     dy =
-                        dy/distance*max;
+                        dy /
+                        distance *
+                        max;
+
                 }
+
 
                 stick.style.left =
                     `calc(50% + ${dx}px)`;
+
 
                 stick.style.top =
                     `calc(50% + ${dy}px)`;
@@ -1013,164 +2003,328 @@ function setupControls(){
                 moveForward =
                     dy < -10;
 
+
                 moveBackward =
                     dy > 10;
+
 
                 moveLeft =
                     dx < -10;
 
+
                 moveRight =
                     dx > 10;
+
             }
+
+        },
+        {
+            passive:false
         }
     );
 
 
-    joy.addEventListener(
+    joystick.addEventListener(
         "touchend",
-        ()=>{
-            joystickTouch=null;
+        function(e){
 
-            stick.style.left="50%";
-            stick.style.top="50%";
+            e.preventDefault();
 
-            moveForward=false;
-            moveBackward=false;
-            moveLeft=false;
-            moveRight=false;
+            resetJoystick();
+
+        },
+        {
+            passive:false
         }
     );
 
+
+    joystick.addEventListener(
+        "touchcancel",
+        function(){
+
+            resetJoystick();
+
+        }
+    );
+
+
+    /* LOOK */
 
     document.addEventListener(
         "touchstart",
-        e=>{
+        function(e){
 
             if(
-                e.target.closest("#joystick") ||
-                e.target.closest(".action") ||
-                e.target.id==="exit"
-            ) return;
+                e.target.closest(
+                    "#joystick"
+                ) ||
 
-            const t=e.changedTouches[0];
+                e.target.closest(
+                    ".action"
+                ) ||
 
-            touchLook={
-                id:t.identifier,
-                x:t.clientX,
-                y:t.clientY
+                e.target.id ===
+                "exit"
+            ){
+                return;
+            }
+
+
+            const t =
+                e.changedTouches[0];
+
+
+            touchLook = {
+
+                id:
+                    t.identifier,
+
+                x:
+                    t.clientX,
+
+                y:
+                    t.clientY
+
             };
+
         }
     );
 
 
     document.addEventListener(
         "touchmove",
-        e=>{
+        function(e){
 
-            if(!touchLook) return;
+            if(!touchLook){
+                return;
+            }
+
 
             for(
-                const t of e.changedTouches
+                const t of
+                e.changedTouches
             ){
 
                 if(
                     t.identifier !==
                     touchLook.id
-                ) continue;
+                ){
+                    continue;
+                }
+
 
                 const dx =
-                    t.clientX-touchLook.x;
+                    t.clientX -
+                    touchLook.x;
+
 
                 const dy =
-                    t.clientY-touchLook.y;
+                    t.clientY -
+                    touchLook.y;
 
 
-                yaw -= dx*.004;
-                pitch -= dy*.003;
+                yaw -=
+                    dx * .004;
+
+
+                pitch -=
+                    dy * .003;
+
 
                 pitch =
                     Math.max(
                         -1.35,
-                        Math.min(1.35,pitch)
+                        Math.min(
+                            1.35,
+                            pitch
+                        )
                     );
 
 
-                touchLook.x=t.clientX;
-                touchLook.y=t.clientY;
+                touchLook.x =
+                    t.clientX;
+
+
+                touchLook.y =
+                    t.clientY;
+
             }
+
         }
     );
 
 
     document.addEventListener(
         "touchend",
-        e=>{
+        function(e){
 
             for(
-                const t of e.changedTouches
+                const t of
+                e.changedTouches
             ){
 
                 if(
                     touchLook &&
-                    t.identifier===
+                    t.identifier ===
                     touchLook.id
                 ){
-                    touchLook=null;
+
+                    touchLook =
+                        null;
+
                 }
+
             }
+
         }
     );
 
 
-    document.getElementById("exit")
-        .onclick=()=>{
-            location.href="index.html";
+    /* EXIT */
+
+    document
+        .getElementById("exit")
+        .onclick = function(){
+
+            location.href =
+                "index.html";
+
         };
 
 
-    document.getElementById("ability")
-        .onclick=()=>{
-            flash("ENERGY PULSE");
+    /* ABILITY */
+
+    document
+        .getElementById("ability")
+        .onclick = function(){
+
+            flash(
+                "ENERGY PULSE READY"
+            );
+
         };
 
 
-    document.getElementById("shield")
-        .onclick=()=>{
-            flash("SHIELD ACTIVE");
+    /* SHIELD */
+
+    document
+        .getElementById("shield")
+        .onclick = function(){
+
+            flash(
+                "SHIELD ACTIVE"
+            );
+
         };
 
 
-    document.getElementById("scan")
-        .onclick=()=>{
-            flash("SCANNER ACTIVE");
+    /* SCANNER */
+
+    document
+        .getElementById("scan")
+        .onclick = function(){
+
+            flash(
+                "SCANNER ACTIVE"
+            );
+
         };
+
 }
 
 
-/* =====================================
+/* ======================================
+   RESET JOYSTICK
+====================================== */
+
+function resetJoystick(){
+
+    joystickTouch =
+        null;
+
+
+    const stick =
+        document.getElementById(
+            "stick"
+        );
+
+
+    stick.style.left =
+        "50%";
+
+
+    stick.style.top =
+        "50%";
+
+
+    moveForward =
+        false;
+
+    moveBackward =
+        false;
+
+    moveLeft =
+        false;
+
+    moveRight =
+        false;
+
+}
+
+
+/* ======================================
    EFFECT
-===================================== */
+====================================== */
 
 function flash(text){
 
-    const old =
-        document.getElementById("crosshair");
+    const notification =
+        document.getElementById(
+            "notification"
+        );
 
-    old.style.transform =
+
+    notification.textContent =
+        text;
+
+
+    notification.classList.add(
+        "show"
+    );
+
+
+    const crosshair =
+        document.getElementById(
+            "crosshair"
+        );
+
+
+    crosshair.style.transform =
         "translate(-50%,-50%) scale(1.8)";
 
-    setTimeout(()=>{
-        old.style.transform =
-            "translate(-50%,-50%) scale(1)";
-    },180);
 
-    console.log(text);
+    setTimeout(
+        function(){
+
+            notification
+                .classList
+                .remove("show");
+
+
+            crosshair.style.transform =
+                "translate(-50%,-50%) scale(1)";
+
+        },
+        700
+    );
+
 }
 
 
-/* =====================================
+/* ======================================
    UPDATE
-===================================== */
+====================================== */
 
 function update(){
 
@@ -1180,121 +2334,212 @@ function update(){
             .05
         );
 
+
     const speed =
-        75*delta;
+        75 * delta;
 
 
-    if(moveForward)
-        velocity.z -= speed;
+    if(moveForward){
 
-    if(moveBackward)
-        velocity.z += speed;
+        velocity.z -=
+            speed;
 
-    if(moveLeft)
-        velocity.x -= speed;
-
-    if(moveRight)
-        velocity.x += speed;
+    }
 
 
-    velocity.multiplyScalar(.82);
+    if(moveBackward){
+
+        velocity.z +=
+            speed;
+
+    }
+
+
+    if(moveLeft){
+
+        velocity.x -=
+            speed;
+
+    }
+
+
+    if(moveRight){
+
+        velocity.x +=
+            speed;
+
+    }
+
+
+    velocity.multiplyScalar(
+        .82
+    );
 
 
     const forward =
         new THREE.Vector3(
+
             Math.sin(yaw),
+
             0,
+
             Math.cos(yaw)
+
         );
+
 
     const right =
         new THREE.Vector3(
+
             Math.cos(yaw),
+
             0,
+
             -Math.sin(yaw)
+
         );
 
 
-    camera.position.addScaledVector(
-        forward,
-        -velocity.z
-    );
-
-    camera.position.addScaledVector(
-        right,
-        velocity.x
-    );
+    camera.position
+        .addScaledVector(
+            forward,
+            -velocity.z
+        );
 
 
-    /* BOUNDARIES */
+    camera.position
+        .addScaledVector(
+            right,
+            velocity.x
+        );
+
 
     camera.position.x =
         THREE.MathUtils.clamp(
+
             camera.position.x,
-            -worldSize/2+15,
-            worldSize/2-15
+
+            -worldSize / 2 + 15,
+
+            worldSize / 2 - 15
+
         );
+
 
     camera.position.z =
         THREE.MathUtils.clamp(
+
             camera.position.z,
-            -worldSize/2+15,
-            worldSize/2-15
+
+            -worldSize / 2 + 15,
+
+            worldSize / 2 - 15
+
         );
 
 
-    camera.position.y=3.2;
+    camera.position.y =
+        3.2;
 
 
-    camera.rotation.order="YXZ";
+    camera.rotation.y =
+        yaw;
 
-    camera.rotation.y=yaw;
-    camera.rotation.x=pitch;
+
+    camera.rotation.x =
+        pitch;
+
 }
 
 
-/* =====================================
-   RENDER
-===================================== */
+/* ======================================
+   GAME LOOP
+====================================== */
 
 function animate(){
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
+
 
     update();
+
 
     renderer.render(
         scene,
         camera
     );
+
 }
 
 
-/* =====================================
+/* ======================================
    RESIZE
-===================================== */
+====================================== */
 
 function resize(){
 
+    if(
+        !camera ||
+        !renderer
+    ){
+        return;
+    }
+
+
     camera.aspect =
-        innerWidth/innerHeight;
+        innerWidth /
+        innerHeight;
+
 
     camera.updateProjectionMatrix();
+
 
     renderer.setSize(
         innerWidth,
         innerHeight
     );
+
 }
 
 
-/* =====================================
-   RUN
-===================================== */
+/* ======================================
+   HIDE LOADING
+====================================== */
 
-init();
+function hideLoading(){
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+
+    loading.style.opacity =
+        "0";
+
+
+    setTimeout(
+        function(){
+
+            loading.style.display =
+                "none";
+
+        },
+        400
+    );
+
+}
+
+
+/* ======================================
+   START
+====================================== */
+
+loadEngine();
 
 </script>
 
 </body>
-</html>
+    </html>
