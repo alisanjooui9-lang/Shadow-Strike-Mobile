@@ -2,133 +2,144 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Shadow Strike | Mission</title>
+<title>Shadow Strike - Game</title>
 
 <style>
 *{
+    box-sizing:border-box;
     margin:0;
     padding:0;
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
 }
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
-    background:#05070b;
+    font-family:Arial,sans-serif;
+    background:#070b10;
     color:white;
-    min-height:100vh;
     overflow:hidden;
 }
 
-.background{
+/* BACKGROUND */
+
+.game-bg{
     position:fixed;
     inset:0;
-    z-index:-2;
     background:
-        radial-gradient(circle at 80% 20%,rgba(0,180,255,.20),transparent 28%),
-        radial-gradient(circle at 15% 80%,rgba(130,0,255,.18),transparent 30%),
-        linear-gradient(135deg,#030509,#0a111b,#020306);
+        radial-gradient(circle at 50% 20%, #12324a 0%, transparent 35%),
+        linear-gradient(135deg,#05070a,#0c141d);
+    z-index:-1;
 }
+
+/* TOP */
 
 .top{
     height:65px;
+    width:100%;
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:10px 15px;
-    background:rgba(4,7,12,.9);
-    border-bottom:1px solid rgba(255,255,255,.08);
+    justify-content:space-between;
+    padding:10px 14px;
+    background:rgba(0,0,0,.75);
+    border-bottom:1px solid #263442;
 }
 
 .back{
-    border:0;
-    background:rgba(255,255,255,.06);
-    color:white;
-    padding:9px 13px;
+    padding:10px 14px;
+    border:1px solid #34495a;
     border-radius:10px;
-    cursor:pointer;
+    background:#111a23;
+    color:white;
+    font-weight:bold;
 }
 
 .title{
     text-align:center;
 }
 
-.title b{
+.title strong{
     display:block;
     font-size:14px;
     letter-spacing:2px;
 }
 
-.title small{
-    color:#687789;
+.title span{
     font-size:9px;
+    color:#55cfff;
 }
+
+/* STATS */
 
 .stats{
     display:flex;
-    gap:7px;
+    gap:6px;
 }
 
 .stat{
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
+    background:#101820;
+    border:1px solid #263442;
+    border-radius:8px;
     padding:7px 9px;
-    border-radius:9px;
     font-size:11px;
 }
 
-.main{
+/* MAIN */
+
+main{
     height:calc(100vh - 65px);
     overflow-y:auto;
-    padding:18px 15px 30px;
-    max-width:700px;
-    margin:auto;
+    padding:18px;
 }
+
+/* MISSION */
 
 .mission{
+    max-width:650px;
+    margin:auto;
+    background:#101820;
+    border:1px solid #263442;
+    border-radius:18px;
     padding:22px;
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,.1);
-    background:rgba(255,255,255,.045);
-    box-shadow:0 15px 40px rgba(0,0,0,.45);
+    box-shadow:0 10px 35px rgba(0,0,0,.5);
 }
 
-.mission-label{
+.label{
     color:#55cfff;
-    font-size:10px;
+    font-size:11px;
     letter-spacing:3px;
     font-weight:bold;
 }
 
-.mission h1{
-    margin:8px 0 6px;
-    font-size:30px;
+h1{
+    margin-top:8px;
+    font-size:29px;
 }
 
 .description{
-    color:#91a0b2;
-    font-size:12px;
+    color:#a6b3c1;
+    margin-top:8px;
     line-height:1.6;
+    font-size:13px;
 }
 
-.progress-box{
-    margin-top:20px;
-}
+/* PROGRESS */
 
 .progress-info{
     display:flex;
     justify-content:space-between;
+    margin-top:22px;
+    margin-bottom:8px;
     font-size:11px;
-    margin-bottom:7px;
 }
 
 .progress{
-    width:100%;
-    height:9px;
-    background:#111923;
+    height:10px;
+    background:#05080c;
     border-radius:20px;
     overflow:hidden;
 }
@@ -136,20 +147,23 @@ body{
 .progress-bar{
     height:100%;
     width:0%;
-    background:linear-gradient(90deg,#19bfff,#176dff);
+    background:#18bfff;
     transition:.3s;
 }
+
+/* OBJECTIVE */
 
 .objective{
     margin-top:18px;
     padding:16px;
-    border-radius:15px;
-    background:rgba(0,0,0,.25);
-    border:1px solid rgba(255,255,255,.07);
+    border-radius:13px;
+    background:#0b1117;
+    border:1px solid #263442;
 }
 
-.objective h2{
-    font-size:14px;
+.objective-title{
+    font-weight:bold;
+    font-size:13px;
     margin-bottom:12px;
 }
 
@@ -157,164 +171,138 @@ body{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    background:#121c25;
     padding:13px;
-    border-radius:11px;
-    background:rgba(255,255,255,.045);
+    border-radius:10px;
 }
 
 .target-name{
+    color:#b9c5d0;
     font-size:12px;
-    color:#b6c1ce;
 }
 
 .target-count{
-    font-size:15px;
+    color:#55cfff;
     font-weight:bold;
-    color:#65d8ff;
 }
 
-.action{
-    margin-top:18px;
+/* BUTTONS */
+
+.actions{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
+    margin-top:18px;
 }
 
-.action button{
-    border:0;
-    border-radius:12px;
-    padding:14px;
-    color:white;
-    font-weight:bold;
+button{
     cursor:pointer;
 }
 
-.complete-btn{
-    background:linear-gradient(135deg,#19bfff,#176dff);
+.complete{
+    border:0;
+    border-radius:11px;
+    padding:14px;
+    background:#168cff;
+    color:white;
+    font-weight:bold;
 }
 
-.reset-btn{
-    background:rgba(255,255,255,.07);
-    border:1px solid rgba(255,255,255,.1)!important;
+.reset{
+    border:1px solid #34495a;
+    border-radius:11px;
+    padding:14px;
+    background:#111a23;
+    color:white;
+    font-weight:bold;
 }
 
-.levels-title{
-    margin:22px 2px 10px;
-    font-size:15px;
+/* LEVELS */
+
+.level-title{
+    max-width:650px;
+    margin:22px auto 10px;
+    font-size:16px;
 }
 
 .levels{
+    max-width:650px;
+    margin:auto;
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(5,1fr);
     gap:8px;
 }
 
-.level-card{
-    min-height:70px;
-    padding:10px 5px;
-    border-radius:12px;
-    background:rgba(255,255,255,.045);
-    border:1px solid rgba(255,255,255,.08);
+.level{
+    padding:12px 4px;
     text-align:center;
-    font-size:11px;
+    background:#101820;
+    border:1px solid #263442;
+    border-radius:11px;
+    font-size:10px;
 }
 
-.level-card b{
+.level b{
     display:block;
-    font-size:16px;
-    margin-bottom:6px;
+    font-size:18px;
+    margin-bottom:5px;
 }
 
-.level-card small{
-    color:#647386;
+.level.current{
+    border-color:#18bfff;
 }
 
-.level-card.current{
-    border-color:#29c5ff;
-    box-shadow:0 0 15px rgba(0,190,255,.15);
+.level.locked{
+    opacity:.4;
 }
 
-.level-card.unlocked{
-    color:#65e68c;
-}
+/* TOAST */
 
-.level-card.locked{
-    opacity:.45;
-}
-
-.toast{
+#toast{
     position:fixed;
     left:50%;
     bottom:25px;
-    transform:translateX(-50%) translateY(20px);
+    transform:translateX(-50%);
+    background:#111b24;
+    border:1px solid #34495a;
     padding:11px 18px;
     border-radius:10px;
-    background:#111923;
-    border:1px solid rgba(255,255,255,.1);
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
     font-size:12px;
-    white-space:nowrap;
-}
-
-.toast.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
-}
-
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.75);
     display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
 }
 
-.modal.show{
-    display:flex;
-}
+/* MOBILE */
 
-.modal-box{
-    width:100%;
-    max-width:380px;
-    padding:25px;
-    border-radius:20px;
-    background:#0b121b;
-    border:1px solid rgba(255,255,255,.1);
-    text-align:center;
-}
+@media(max-width:500px){
 
-.modal-box h2{
-    color:#65e68c;
-    margin-bottom:10px;
-}
+    .stats .stat{
+        padding:6px;
+        font-size:10px;
+    }
 
-.reward{
-    margin:15px 0;
-    padding:13px;
-    border-radius:12px;
-    background:rgba(255,255,255,.05);
-    color:#ffd45c;
-}
+    .title strong{
+        font-size:11px;
+    }
 
-.modal-box button{
-    width:100%;
-    border:0;
-    padding:13px;
-    border-radius:11px;
-    background:linear-gradient(135deg,#19bfff,#176dff);
-    color:white;
-    font-weight:bold;
+    .mission{
+        padding:18px;
+    }
+
+    h1{
+        font-size:24px;
+    }
+
+    .levels{
+        grid-template-columns:repeat(5,1fr);
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div class="background"></div>
+<div class="game-bg"></div>
 
 <header class="top">
 
@@ -323,14 +311,15 @@ body{
     </button>
 
     <div class="title">
-        <b>SHADOW STRIKE</b>
-        <small>MISSION CONTROL</small>
+        <strong>SHADOW STRIKE</strong>
+        <span>MISSION CONTROL</span>
     </div>
 
     <div class="stats">
         <div class="stat">
             🪙 <span id="credits">1000</span>
         </div>
+
         <div class="stat">
             ⭐ <span id="xp">0</span>
         </div>
@@ -339,117 +328,101 @@ body{
 </header>
 
 
-<main class="main">
+<main>
 
-    <section class="mission">
+<section class="mission">
 
-        <div class="mission-label">
-            ACTIVE OPERATION
+    <div class="label">
+        ACTIVE OPERATION
+    </div>
+
+    <h1 id="missionName">
+        TRAINING PROTOCOL
+    </h1>
+
+    <p class="description" id="description">
+        Complete the objective to advance to the next mission.
+    </p>
+
+
+    <div class="progress-info">
+        <span>MISSION PROGRESS</span>
+
+        <span id="progressText">
+            0 / 5
+        </span>
+    </div>
+
+    <div class="progress">
+        <div
+            id="progressBar"
+            class="progress-bar">
+        </div>
+    </div>
+
+
+    <div class="objective">
+
+        <div class="objective-title">
+            🎯 CURRENT OBJECTIVE
         </div>
 
-        <h1 id="missionName">
-            TRAINING PROTOCOL
-        </h1>
+        <div class="target">
 
-        <p class="description" id="description">
-            Complete the objective to advance to the next mission.
-        </p>
+            <span
+                id="targetName"
+                class="target-name">
+                Training Tasks
+            </span>
 
-
-        <div class="progress-box">
-
-            <div class="progress-info">
-                <span>MISSION PROGRESS</span>
-                <span id="progressText">0 / 5</span>
-            </div>
-
-            <div class="progress">
-                <div
-                    class="progress-bar"
-                    id="progressBar">
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="objective">
-
-            <h2>🎯 CURRENT OBJECTIVE</h2>
-
-            <div class="target">
-
-                <span
-                    class="target-name"
-                    id="targetName">
-                    Complete Training Tasks
-                </span>
-
-                <span
-                    class="target-count"
-                    id="targetCount">
-                    0 / 5
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="action">
-
-            <button
-                class="complete-btn"
-                onclick="completeTask()">
-                ✓ COMPLETE TASK
-            </button>
-
-            <button
-                class="reset-btn"
-                onclick="resetMission()">
-                ↻ RESET
-            </button>
+            <span
+                id="targetCount"
+                class="target-count">
+                0 / 5
+            </span>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <h2 class="levels-title">
-        MISSION LEVELS
-    </h2>
+    <div class="actions">
 
-    <section class="levels" id="levels"></section>
+        <button
+            class="complete"
+            onclick="completeTask()">
 
-</main>
+            ✓ COMPLETE TASK
 
+        </button>
 
-<div class="toast" id="toast"></div>
+        <button
+            class="reset"
+            onclick="resetMission()">
 
+            ↻ RESET
 
-<div class="modal" id="rewardModal">
-
-    <div class="modal-box">
-
-        <h2>MISSION COMPLETE</h2>
-
-        <p>
-            Operation completed successfully.
-        </p>
-
-        <div class="reward">
-            🪙 +<span id="rewardCredits">100</span>
-            &nbsp;&nbsp;
-            ⭐ +<span id="rewardXP">50</span>
-        </div>
-
-        <button onclick="nextLevel()">
-            CONTINUE →
         </button>
 
     </div>
 
-</div>
+</section>
+
+
+<h2 class="level-title">
+    MISSION LEVELS
+</h2>
+
+
+<section
+    id="levels"
+    class="levels">
+</section>
+
+</main>
+
+
+<div id="toast"></div>
 
 
 <script>
@@ -459,10 +432,10 @@ const missions = [
     {
         name:"TRAINING PROTOCOL",
         description:"Complete your first training operation.",
-        target:"Complete Training Tasks",
+        target:"Training Tasks",
         goal:5,
-        rewardCredits:100,
-        rewardXP:50
+        credits:100,
+        xp:50
     },
 
     {
@@ -470,17 +443,17 @@ const missions = [
         description:"Complete reconnaissance objectives.",
         target:"Recon Tasks",
         goal:7,
-        rewardCredits:150,
-        rewardXP:75
+        credits:150,
+        xp:75
     },
 
     {
         name:"NIGHT OPERATION",
-        description:"Complete the night-operation objectives.",
+        description:"Complete the night operation.",
         target:"Night Tasks",
         goal:10,
-        rewardCredits:200,
-        rewardXP:100
+        credits:200,
+        xp:100
     },
 
     {
@@ -488,32 +461,40 @@ const missions = [
         description:"Complete advanced operator training.",
         target:"Elite Tasks",
         goal:12,
-        rewardCredits:300,
-        rewardXP:150
+        credits:300,
+        xp:150
     },
 
     {
         name:"FINAL PROTOCOL",
-        description:"Complete the final training protocol.",
+        description:"Complete the final protocol.",
         target:"Final Tasks",
         goal:15,
-        rewardCredits:500,
-        rewardXP:250
+        credits:500,
+        xp:250
     }
 
 ];
 
 
-const defaultGameData = {
+/* DATA */
+
+const defaultData = {
 
     playerName:"GHOST",
+
     level:1,
+
     sc:250,
+
     credits:1000,
+
     selectedMode:"Easy",
+
     unlockedLevel:1,
 
     missionProgress:0,
+
     xp:0
 
 };
@@ -526,18 +507,22 @@ try{
     data =
         JSON.parse(
             localStorage.getItem("shadowStrike")
-        ) || defaultGameData;
+        ) || defaultData;
 
-}catch(error){
+}catch(e){
 
-    data = defaultGameData;
+    data = defaultData;
 
 }
 
 
-/* اگر اطلاعات قدیمی بود */
+/* FIX OLD DATA */
 
-if(typeof data.unlockedLevel !== "number"){
+if(!data.level){
+    data.level = 1;
+}
+
+if(!data.unlockedLevel){
     data.unlockedLevel = 1;
 }
 
@@ -549,10 +534,14 @@ if(typeof data.xp !== "number"){
     data.xp = 0;
 }
 
+if(typeof data.credits !== "number"){
+    data.credits = 1000;
+}
 
-/* ذخیره */
 
-function saveData(){
+/* SAVE */
+
+function save(){
 
     localStorage.setItem(
         "shadowStrike",
@@ -562,62 +551,76 @@ function saveData(){
 }
 
 
-/* مأموریت فعلی */
+/* CURRENT MISSION */
 
-function getMission(){
+function currentMission(){
 
-    const index =
+    return missions[
         Math.min(
             data.level - 1,
             missions.length - 1
-        );
-
-    return missions[index];
+        )
+    ];
 
 }
 
 
-/* نمایش */
+/* RENDER */
 
 function render(){
 
-    const mission = getMission();
+    const mission =
+        currentMission();
 
-    document.getElementById("missionName")
-        .textContent = mission.name;
+    document.getElementById(
+        "missionName"
+    ).textContent =
+        mission.name;
 
-    document.getElementById("description")
-        .textContent = mission.description;
+    document.getElementById(
+        "description"
+    ).textContent =
+        mission.description;
 
-    document.getElementById("targetName")
-        .textContent = mission.target;
+    document.getElementById(
+        "targetName"
+    ).textContent =
+        mission.target;
 
-    document.getElementById("credits")
-        .textContent = data.credits;
+    document.getElementById(
+        "credits"
+    ).textContent =
+        data.credits;
 
-    document.getElementById("xp")
-        .textContent = data.xp;
+    document.getElementById(
+        "xp"
+    ).textContent =
+        data.xp;
 
-    const progress =
+
+    let progress =
         Math.min(
             data.missionProgress,
             mission.goal
         );
 
-    document.getElementById("targetCount")
-        .textContent =
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
         progress + " / " + mission.goal;
 
-    document.getElementById("progressText")
-        .textContent =
+
+    document.getElementById(
+        "targetCount"
+    ).textContent =
         progress + " / " + mission.goal;
 
-    const percentage =
-        (progress / mission.goal) * 100;
 
-    document.getElementById("progressBar")
-        .style.width =
-        percentage + "%";
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        ((progress / mission.goal) * 100) + "%";
 
 
     renderLevels();
@@ -625,195 +628,166 @@ function render(){
 }
 
 
+/* LEVELS */
+
 function renderLevels(){
 
-    const container =
+    const box =
         document.getElementById("levels");
 
-    container.innerHTML = "";
-
-    missions.forEach((mission,index)=>{
-
-        const levelNumber = index + 1;
-
-        const card =
-            document.createElement("div");
-
-        card.className = "level-card";
+    box.innerHTML = "";
 
 
-        if(levelNumber === data.level){
-            card.classList.add("current");
+    missions.forEach(
+        (mission,index)=>{
+
+            const number =
+                index + 1;
+
+            const div =
+                document.createElement("div");
+
+            div.className = "level";
+
+
+            if(number === data.level){
+
+                div.classList.add("current");
+
+            }
+
+
+            if(number > data.unlockedLevel){
+
+                div.classList.add("locked");
+
+            }
+
+
+            div.innerHTML = `
+
+                <b>
+                    ${
+                        number <= data.unlockedLevel
+                        ? "✓"
+                        : "🔒"
+                    }
+                </b>
+
+                LEVEL ${number}
+
+            `;
+
+
+            box.appendChild(div);
+
         }
-
-        if(levelNumber <= data.unlockedLevel){
-            card.classList.add("unlocked");
-        }
-
-        if(levelNumber > data.unlockedLevel){
-            card.classList.add("locked");
-        }
-
-
-        card.innerHTML = `
-            <b>
-                ${
-                    levelNumber <= data.unlockedLevel
-                    ? "✓"
-                    : "🔒"
-                }
-            </b>
-
-            LEVEL ${levelNumber}
-
-            <small>
-                ${levelNumber === data.level
-                    ? "CURRENT"
-                    : levelNumber <= data.unlockedLevel
-                    ? "UNLOCKED"
-                    : "LOCKED"}
-            </small>
-        `;
-
-
-        container.appendChild(card);
-
-    });
+    );
 
 }
 
 
-/* انجام یک کار */
+/* TASK */
 
 function completeTask(){
 
-    const mission = getMission();
+    const mission =
+        currentMission();
 
-    if(data.missionProgress >= mission.goal){
 
-        showToast("Mission already completed");
+    if(
+        data.missionProgress >=
+        mission.goal
+    ){
 
         return;
+
     }
 
 
     data.missionProgress++;
 
-    saveData();
+    save();
 
     render();
 
 
-    if(data.missionProgress >= mission.goal){
+    if(
+        data.missionProgress >=
+        mission.goal
+    ){
 
-        completeMission();
-
-    }else{
-
-        showToast(
-            "Objective progress: " +
-            data.missionProgress +
-            "/" +
-            mission.goal
-        );
+        finishMission();
 
     }
 
 }
 
 
-/* تکمیل مرحله */
+/* FINISH */
 
-function completeMission(){
+function finishMission(){
 
-    const mission = getMission();
+    const mission =
+        currentMission();
 
-    data.credits += mission.rewardCredits;
 
-    data.xp += mission.rewardXP;
+    data.credits +=
+        mission.credits;
+
+    data.xp +=
+        mission.xp;
 
 
     if(
-        data.level < missions.length
+        data.level <
+        missions.length
     ){
+
+        data.level++;
 
         data.unlockedLevel =
             Math.max(
                 data.unlockedLevel,
-                data.level + 1
+                data.level
             );
-
-    }
-
-
-    saveData();
-
-
-    document.getElementById("rewardCredits")
-        .textContent =
-        mission.rewardCredits;
-
-    document.getElementById("rewardXP")
-        .textContent =
-        mission.rewardXP;
-
-    document.getElementById("rewardModal")
-        .classList.add("show");
-
-}
-
-
-/* مرحله بعد */
-
-function nextLevel(){
-
-    document.getElementById("rewardModal")
-        .classList.remove("show");
-
-
-    if(data.level < missions.length){
-
-        data.level++;
 
         data.missionProgress = 0;
 
-        saveData();
-
-        render();
-
-        showToast(
-            "LEVEL " +
-            data.level +
-            " UNLOCKED!"
-        );
-
-    }else{
-
-        showToast(
-            "ALL MISSIONS COMPLETED!"
-        );
-
     }
+
+
+    save();
+
+    render();
+
+    showToast(
+        "MISSION COMPLETE! +" +
+        mission.xp +
+        " XP"
+    );
 
 }
 
 
-/* ریست مرحله */
+/* RESET */
 
 function resetMission(){
 
     data.missionProgress = 0;
 
-    saveData();
+    save();
 
     render();
 
-    showToast("Mission reset");
+    showToast(
+        "Mission reset"
+    );
 
 }
 
 
-/* خانه */
+/* HOME */
 
 function goHome(){
 
@@ -823,25 +797,31 @@ function goHome(){
 }
 
 
-/* Toast */
+/* TOAST */
 
 function showToast(message){
 
     const toast =
         document.getElementById("toast");
 
-    toast.textContent = message;
+    toast.textContent =
+        message;
 
-    toast.classList.add("show");
+    toast.style.display =
+        "block";
+
 
     setTimeout(()=>{
 
-        toast.classList.remove("show");
+        toast.style.display =
+            "none";
 
     },1800);
 
 }
 
+
+/* START */
 
 render();
 
